@@ -1,7 +1,7 @@
 import styled from 'styled-components';
-import { QueueDisplaySettings } from '../../../../../types';
-import { useMaxFontSize } from '../../../lib/useMaxFontSize';
-import { useAudio } from '../../../lib/useAudio';
+import { QueueDisplaySettings } from '../../../../types';
+import { useMaxFontSize } from '../../hooks/useMaxFontSize';
+import { useAudio } from '../../hooks/useAudio';
 
 const Container = styled.div<{
   settings: QueueDisplaySettings;

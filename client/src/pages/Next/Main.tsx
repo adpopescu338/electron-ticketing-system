@@ -1,12 +1,12 @@
 import React from 'react';
 import { QueueDisplaySettings } from '../../../../types';
-import { useCtx } from '../../lib/Ctx';
 import { CircularProgress } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { updateDesk } from './utils';
 import { Desk, NextButton, QDisplayer, SendMessage } from './components';
-import { useQueueData } from '../../lib/useQueueData';
-import { useSocket } from '../../lib/useSocket';
+import { useQueueData } from 'hooks/useQueueData';
+import { useSocket } from 'hooks/useSocket';
+import { useCtx } from 'hooks/useCtx';
 
 export const Next: React.FC = () => {
   const { queuesSettings } = useCtx();

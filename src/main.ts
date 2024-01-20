@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import { startExpressApp } from './express/startExpressApp';
 import { IPCEventNames } from './libs/constants';
+import { QueueManager } from './libs/Queue';
 
 const PORT = 3001;
 
@@ -16,7 +17,7 @@ function createWindow() {
   });
 
   // and load the app.
-  mainWindow.loadURL(`http://localhost:${PORT}/admin`);
+  mainWindow.loadURL(`http://localhost:${PORT}`);
 
   // // Open the DevTools.
   // mainWindow.webContents.openDevTools();
@@ -46,7 +47,8 @@ app.whenReady().then(async () => {
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
-app.on('window-all-closed', () => {
+app.on('window-all-closed', async () => {
+  await QueueManager.shutdown();
   app.quit();
 });
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { EventNames } from '../../../../../types';
 import Button from '@mui/material/Button';
 import styled from 'styled-components';
-import { useSocket } from '../../../lib/useSocket';
+import { useSocket } from '../../../hooks/useSocket';
 
 const WAIT_AFTER_CALL = 5 * 1000;
 

@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { QueueDisplaySettings } from '../../../../../types';
+import { QueueDisplaySettings } from '../../../../types';
 
 export const Wrapper = styled.div<
   Pick<QueueDisplaySettings, 'color' | 'backgroundColor' | 'borderColor' | 'displayTitle'>

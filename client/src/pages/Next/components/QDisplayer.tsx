@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { FeUseDataReturnType, QueueDisplaySettings } from '../../../../../types';
-import { useQueueData } from '../../../lib/useQueueData';
+import { useQueueData } from '../../../hooks/useQueueData';
 import { Typography } from '@mui/material';
 
 const Container = styled.div`

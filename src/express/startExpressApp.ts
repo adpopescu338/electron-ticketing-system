@@ -1,10 +1,10 @@
-import { QueueManagerClass } from './../libs/Queue';
+import { QueueManager } from './../libs/Queue';
 import { EventNames } from './../../types';
 import express from 'express';
 import path from 'path';
 import http from 'http';
 import { Server } from 'socket.io';
-import { getQueuesSettings } from '../libs/storage';
+import { QueueNames } from '../libs/storage';
 import { router } from './router';
 import { findSocketQueueName } from '../libs/findSocketQueueName';
 
@@ -12,12 +12,11 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-const queuesSettings = getQueuesSettings();
-const queueManager = new QueueManagerClass(queuesSettings, io);
+QueueManager.init(io);
 
 io.on('connection', (socket) => {
   socket.on('joinQueue' satisfies EventNames, (queueName: string) => {
-    const queueExists = queuesSettings.some((queue) => queue.name === queueName);
+    const queueExists = QueueNames.has(queueName);
     if (!queueExists) {
       console.log('Queue does not exist', queueName);
       return;
@@ -25,19 +24,17 @@ io.on('connection', (socket) => {
 
     socket.join(queueName);
 
-    queueManager.emitUpdate(queueName, socket);
+    QueueManager.emitUpdate(queueName, socket);
   });
 
   socket.on('sendNextReq' satisfies EventNames, (desk: number) => {
     const queueName = findSocketQueueName(socket);
-    console.log('next', queueName, desk);
-    queueManager.next(queueName, desk);
+    QueueManager.next(queueName, desk);
   });
 
   socket.on('messageSent' satisfies EventNames, (message: string) => {
     const queueName = findSocketQueueName(socket);
-    console.log('message', queueName, message);
-    queueManager.message(queueName, message);
+    QueueManager.message(queueName, message);
   });
 });
 

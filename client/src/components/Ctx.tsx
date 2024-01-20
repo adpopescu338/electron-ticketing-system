@@ -1,9 +1,9 @@
 import React from 'react';
-import { createContext, useContext } from 'react';
+import { createContext } from 'react';
 import { QueueDisplaySettings } from '../../../types';
 import axios from 'axios';
 
-const Ctx = createContext<{
+export const Ctx = createContext<{
   queuesSettings: QueueDisplaySettings[];
   refetchQueuesSettings: () => void;
 }>({
@@ -31,9 +31,4 @@ export const CtxProvider: React.FC<{
       {children}
     </Ctx.Provider>
   );
-};
-
-export const useCtx = () => {
-  const ctx = useContext(Ctx);
-  return ctx;
 };

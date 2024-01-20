@@ -3,35 +3,6 @@ import { QueueDisplaySettings, QItem, SystemSettings } from '../../types';
 import { isEmpty } from 'lodash';
 
 export const getQueuesSettings = (): QueueDisplaySettings[] => {
-  // TODO: remove this
-  return [
-    {
-      maxBoxesToDisplay: 4,
-      displayTitle: true,
-      color: 'white',
-      backgroundColor: 'blue',
-      borderColor: 'green',
-      name: 'Pasapoarte',
-      messageColor: 'yellow',
-      messageBackgroundColor: 'blue',
-      tableHeaderNumberText: 'Numar',
-      tableHeaderDeskText: 'Ghiseu',
-      messageAudioFileName: '1.mp3',
-      numberAudioFileName: '2.mp3',
-    },
-    // {
-    //   maxBoxesToDisplay: 3,
-    //   displayTitle: false,
-    //   color: 'white',
-    //   backgroundColor: 'red',
-    //   borderColor: 'green',
-    //   name: 'Notariale',
-    //   messageColor: 'white',
-    //   messageBackgroundColor: 'green',
-    //   tableHeaderNumberText: 'Nr.',
-    //   tableHeaderDeskText: 'Gh.',
-    // },
-  ];
   const queuesSettings = storage.getSync('queues') as {
     queues: QueueDisplaySettings[];
   };
@@ -43,17 +14,15 @@ export const getQueuesSettings = (): QueueDisplaySettings[] => {
   return queuesSettings.queues;
 };
 
+export const QueueNames = new Set<string>(getQueuesSettings().map((queue) => queue.name));
+
 type QueuesStates = {
   [queueName: string]: QItem[];
 };
 
-export const getQueuesState = (queuesSettings: QueueDisplaySettings[]): QueuesStates => {
-  return {
-    Pasapoarte: [],
-    Notariale: [],
-  };
-  const queuesStates = queuesSettings.reduce((acc, queue) => {
-    const persistedItems = storage.getSync(queue.name) as {
+export const getQueuesState = (): QueuesStates => {
+  const queuesStates = [...QueueNames].reduce((acc, name) => {
+    const persistedItems = storage.getSync(`queueState::${name}`) as {
       items: QItem[];
     };
 
@@ -61,13 +30,24 @@ export const getQueuesState = (queuesSettings: QueueDisplaySettings[]): QueuesSt
       return acc;
     }
 
-    acc[queue.name] = persistedItems.items;
+    acc[name] = persistedItems.items;
 
     return acc;
   }, {} as QueuesStates);
 
   return queuesStates;
 };
+
+export const setQueueState = (queueName: string, items: QItem[]): Promise<void> =>
+  new Promise((resolve, reject) => {
+    storage.set(`queueState::${queueName}`, { items }, (error) => {
+      if (error) {
+        reject(error);
+      }
+
+      resolve();
+    });
+  });
 
 export const getQueueState = (queueName: string): QItem[] => {
   const persistedItems = storage.getSync(queueName) as {
@@ -95,3 +75,65 @@ export const getSystemSettings = (): SystemSettings => {
 
   return settings;
 };
+
+export const addQueueSettings = (queueSettings: QueueDisplaySettings): Promise<void> =>
+  new Promise((resolve, reject) => {
+    const queuesSettings = getQueuesSettings();
+
+    const exists = queuesSettings.find((queue) => queue.name === queueSettings.name);
+
+    if (exists) {
+      reject(new Error('Queue already exists'));
+    }
+
+    queuesSettings.push(queueSettings);
+
+    storage.set('queues', { queues: queuesSettings }, (error) => {
+      if (error) {
+        reject(error);
+      }
+      QueueNames.add(queueSettings.name);
+      resolve();
+    });
+  });
+
+export const updateQueueSettings = (queueSettings: QueueDisplaySettings): Promise<void> =>
+  new Promise((resolve, reject) => {
+    const queuesSettings = getQueuesSettings();
+
+    const index = queuesSettings.findIndex((queue) => queue.name === queueSettings.name);
+
+    queuesSettings[index] = queueSettings;
+
+    storage.set('queues', { queues: queuesSettings }, (error) => {
+      if (error) {
+        reject(error);
+      }
+
+      resolve();
+    });
+  });
+
+export const removeQueueSettings = (queueName: string): Promise<void> =>
+  new Promise((resolve, reject) => {
+    const queuesSettings = getQueuesSettings();
+
+    const index = queuesSettings.findIndex((queue) => queue.name === queueName);
+
+    queuesSettings.splice(index, 1);
+
+    storage.set('queues', { queues: queuesSettings }, (error) => {
+      if (error) {
+        reject(error);
+      }
+      QueueNames.delete(queueName);
+      resolve();
+    });
+
+    // not important to wait for this to finish
+    storage.remove(`queueState::${queueName}`, (error) => {
+      if (error) {
+        console.error('removeQueueSettings::error', error);
+      }
+    });
+  });

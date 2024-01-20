@@ -2,16 +2,15 @@ import {
   EventNames,
   QItem,
   QMessage,
-  QueueDisplaySettings,
   Queues,
   SystemSettings,
 } from '../../types';
-import { getQueuesState, getSystemSettings } from './storage';
+import { getQueuesState, getSystemSettings, setQueueState, QueueNames } from './storage';
 import { isNil } from 'lodash';
 import { Server as Socket } from 'socket.io';
 import { Socket as SocketType } from 'socket.io';
 
-export class QueueManagerClass {
+class QueueManagerCl {
   qs: Queues;
   settings: SystemSettings;
   socket: Socket;
@@ -20,10 +19,10 @@ export class QueueManagerClass {
     [queueName: string]: NodeJS.Timeout;
   } = {};
 
-  constructor(queuesSettings: QueueDisplaySettings[], socket: Socket) {
+  init(socket: Socket): void {
     this.socket = socket;
     this.settings = getSystemSettings();
-    const queuesState = getQueuesState(queuesSettings);
+    const queuesState = getQueuesState();
 
     this.qs = Object.entries(queuesState).reduce((acc, [queueName, currentItems]) => {
       acc[queueName] = {
@@ -39,6 +38,35 @@ export class QueueManagerClass {
         this.handleBackground(queueName);
       }, this.INTERVAL_MS);
     });
+  }
+
+  public addQueue(queueName: string): void {
+    this.qs[queueName] = {
+      currentItems: [],
+      nextItems: [],
+      message: null,
+    };
+    this.intervals[queueName] = setInterval(() => {
+      this.handleBackground(queueName);
+    }, this.INTERVAL_MS);
+  }
+
+  public removeQueue(queueName: string): void {
+    delete this.qs[queueName];
+    clearInterval(this.intervals[queueName]);
+    delete this.intervals[queueName];
+  }
+
+  public async shutdown(): Promise<void> {
+    Object.values(this.intervals).forEach((interval) => {
+      clearInterval(interval);
+    });
+
+    await Promise.all(
+      Object.entries(this.qs).map(([queueName, queue]) => {
+        return setQueueState(queueName, queue.currentItems);
+      })
+    );
   }
 
   message(queueName: string, message: string): void {
@@ -146,6 +174,7 @@ export class QueueManagerClass {
       const itemToMoveFromNextToCurrent = nextItems.shift();
       itemToMoveFromNextToCurrent.displayedAt = Date.now();
       currentItems.unshift(itemToMoveFromNextToCurrent);
+      this.resizeCurrentItems(queueName);
       this.emitUpdate(queueName);
 
       logger.debug('Queue::handleBackground:: Next item moved to current items');
@@ -192,7 +221,7 @@ export class QueueManagerClass {
   }
 
   public emitUpdate(queueName: string, specificSocket?: SocketType): void {
-    logger.debug(`Queue::emitUpdate, emitting update to ${queueName}`);
+    logger.debug(`Queue::emitUpdate, emitting update to ${queueName}`, this.qs);
     if (specificSocket) {
       specificSocket.emit('update' satisfies EventNames, this.qs[queueName]);
       return;
@@ -212,3 +241,5 @@ const logger = {
     console.log(...args);
   },
 };
+
+export const QueueManager = new QueueManagerCl();
