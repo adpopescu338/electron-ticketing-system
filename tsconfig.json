@@ -13,5 +13,5 @@
   },
   "include": [
     "src/**/*"
-  ]
+, "client/src/lib/yup/constants.ts"  ]
 }

@@ -1,11 +1,5 @@
-import {
-  EventNames,
-  QItem,
-  QMessage,
-  Queues,
-  SystemSettings,
-} from '../../types';
-import { getQueuesState, getSystemSettings, setQueueState, QueueNames } from './storage';
+import { EventNames, QItem, QMessage, Queues, SystemSettings } from '../../types';
+import { getQueuesState, getSystemSettings, setQueueState } from './storage';
 import { isNil } from 'lodash';
 import { Server as Socket } from 'socket.io';
 import { Socket as SocketType } from 'socket.io';
@@ -221,7 +215,7 @@ class QueueManagerCl {
   }
 
   public emitUpdate(queueName: string, specificSocket?: SocketType): void {
-    logger.debug(`Queue::emitUpdate, emitting update to ${queueName}`, this.qs);
+    logger.debug(`Queue::emitUpdate, emitting update to ${queueName}`);
     if (specificSocket) {
       specificSocket.emit('update' satisfies EventNames, this.qs[queueName]);
       return;
@@ -233,6 +227,12 @@ class QueueManagerCl {
   private emitItemAdded(queueName: string, nextItems: QItem[]): void {
     logger.debug(`Queue::emitItemAdded, emitting itemAdded to ${queueName}`);
     this.socket.to(queueName).emit('nextItemAdded' satisfies EventNames, nextItems);
+  }
+
+  public removeAllQueues(): void {
+    Object.keys(this.qs).forEach((queueName) => {
+      this.removeQueue(queueName);
+    });
   }
 }
 

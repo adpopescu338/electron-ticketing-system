@@ -20,7 +20,9 @@
       "components/*": ["./components/*"],
       "lib/*": ["./lib/*"],
       "hooks/*": ["./hooks/*"],
-      "pages/*": ["./pages/*"]
+      "pages/*": ["./pages/*"],
+      "@types/*": ["../../types/*"],
+      "@types": ["../../types"]
     }
   },
   "include": ["src", "../types"]

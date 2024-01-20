@@ -18,8 +18,10 @@ export const Display = () => {
     }
 
     try {
-      const lcCustomDisplays = JSON.parse(localStorage.getItem(customDisplayId) || '{}');
-      return lcCustomDisplays as QueueDisplaySettings[];
+      const sessionCustomDisplays = JSON.parse(
+        window.opener.sessionStorage.getItem(customDisplayId)
+      );
+      return sessionCustomDisplays as QueueDisplaySettings[];
     } catch (e) {
       console.log(`Error parsing custom displays`, e);
     }
@@ -31,7 +33,7 @@ export const Display = () => {
     return <div>There are no queues to display</div>;
   }
   return (
-    <DisplayWrapper columns={queuesToDisplay.length}>
+    <DisplayWrapper>
       {queuesToDisplay.map((queue) => {
         return <QBoxContainer key={queue.name} settings={queue} />;
       })}

@@ -1,6 +1,5 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow } from 'electron';
 import { startExpressApp } from './express/startExpressApp';
-import { IPCEventNames } from './libs/constants';
 import { QueueManager } from './libs/Queue';
 
 const PORT = 3001;
@@ -8,19 +7,33 @@ const PORT = 3001;
 function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    height: 600,
     webPreferences: {
       sandbox: false,
+      preload: `${__dirname}/preload.js`,
     },
-    width: 800,
-    fullscreen: true,
+    icon: `${__dirname}/../client/build/q.png`,
   });
+
+  mainWindow.maximize();
 
   // and load the app.
   mainWindow.loadURL(`http://localhost:${PORT}`);
 
-  // // Open the DevTools.
-  // mainWindow.webContents.openDevTools();
+  // Listen for new window creation
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    // If the URL of the new window is the specific one, create and maximize it
+    if (url.includes('/display')) {
+      return {
+        action: 'allow' as const,
+        overrideBrowserWindowOptions: {
+          fullscreen: true,
+        },
+        outlivesOpener: true,
+      };
+    }
+
+    return { action: 'allow' as const }; // Allow the new window with default behavior otherwise
+  });
 }
 
 // This method will be called when Electron has finished
@@ -34,13 +47,6 @@ app.whenReady().then(async () => {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
-  });
-
-  ipcMain.on('update' satisfies IPCEventNames, (_event, arg) => {
-    console.log('update', {
-      arg,
-      _event,
-    });
   });
 });
 

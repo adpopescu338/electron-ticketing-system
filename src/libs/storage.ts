@@ -1,6 +1,7 @@
 import storage from 'electron-json-storage';
 import { QueueDisplaySettings, QItem, SystemSettings } from '../../types';
 import { isEmpty } from 'lodash';
+import { DEFAULT_SYSTEM_SETTINGS } from '../../client/src/lib/constants';
 
 export const getQueuesSettings = (): QueueDisplaySettings[] => {
   const queuesSettings = storage.getSync('queues') as {
@@ -26,11 +27,9 @@ export const getQueuesState = (): QueuesStates => {
       items: QItem[];
     };
 
-    if (isEmpty(persistedItems)) {
-      return acc;
-    }
+    const items = !Array.isArray(persistedItems?.items) ? [] : persistedItems.items;
 
-    acc[name] = persistedItems.items;
+    acc[name] = items;
 
     return acc;
   }, {} as QueuesStates);
@@ -61,17 +60,18 @@ export const getQueueState = (queueName: string): QItem[] => {
   return persistedItems.items;
 };
 
-const DEFAULT_SYSTEM_SETTINGS: SystemSettings = {
-  MESSAGE_DISPLAY_TIME_SECONDS: 10,
-  Q_ITEM_DISPLAY_TIME_SECONDS: 10,
-  MAX_NUMBER: 99,
-  START_NUMBER: 0,
-};
-
 export const getSystemSettings = (): SystemSettings => {
   const settings = storage.getSync('systemSettings') as SystemSettings;
 
-  if (isEmpty(settings)) return DEFAULT_SYSTEM_SETTINGS;
+  if (isEmpty(settings)) {
+    // save default settings
+    storage.set('systemSettings', DEFAULT_SYSTEM_SETTINGS, (error) => {
+      if (error) {
+        console.error('getSystemSettings::error', error);
+      }
+    });
+    return DEFAULT_SYSTEM_SETTINGS;
+  }
 
   return settings;
 };
@@ -135,5 +135,16 @@ export const removeQueueSettings = (queueName: string): Promise<void> =>
       if (error) {
         console.error('removeQueueSettings::error', error);
       }
+    });
+  });
+
+export const setSystemSettings = (settings: SystemSettings): Promise<void> =>
+  new Promise((resolve, reject) => {
+    storage.set('systemSettings', settings, (error) => {
+      if (error) {
+        reject(error);
+      }
+
+      resolve();
     });
   });

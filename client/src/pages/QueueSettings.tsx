@@ -7,15 +7,7 @@ import { QueueDisplaySettings } from '../../../types';
 import { queueSettingsValidationSchema } from 'lib/yup/queueSettingsValidationSchema';
 import { useCtx } from 'hooks/useCtx';
 import { useParams } from 'react-router-dom';
-import {
-  FormControl,
-  IconButton,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { FormControl, IconButton, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import { Grid, Paper } from '@mui/material';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import styled from 'styled-components';
@@ -105,11 +97,6 @@ export const QueueSettings: React.FC<{
   const queueByName = queuesSettings.find((queue) => queue.name === queueName);
   const [audios, setAudios] = React.useState<string[]>([]);
 
-  console.log({
-    queueName,
-    queueByName,
-  });
-
   const playAudio = (fileName: string) => {
     const audio = new Audio(`/audio/${fileName}`);
     audio.play();
@@ -138,7 +125,6 @@ export const QueueSettings: React.FC<{
 
   return (
     <FormContainer elevation={3}>
-      <Typography variant="h4">{queueByName ? queueName : 'New Queue'}</Typography>
       <form onSubmit={formik.handleSubmit}>
         <Grid container spacing={2}>
           <Grid item xs={12}>

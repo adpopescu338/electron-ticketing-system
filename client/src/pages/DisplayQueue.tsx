@@ -1,5 +1,5 @@
 import { useCtx } from 'hooks/useCtx';
-import { QBoxContainer } from '../components/QBox/QBox';
+import { QBoxContainer } from 'components/QBox/QBox';
 import { useParams } from 'react-router-dom';
 import { DisplayWrapper } from 'components/DisplayWrapper';
 
@@ -17,7 +17,7 @@ export const DisplayQueue = () => {
   }
 
   return (
-    <DisplayWrapper columns={1}>
+    <DisplayWrapper>
       <QBoxContainer settings={queue} />
     </DisplayWrapper>
   );

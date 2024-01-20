@@ -1,9 +1,19 @@
 import { Router } from 'express';
-import { addQueueSettings, getQueuesSettings, removeQueueSettings, updateQueueSettings } from '../libs/storage';
+import {
+  addQueueSettings,
+  getQueuesSettings,
+  removeQueueSettings,
+  updateQueueSettings,
+  getSystemSettings,
+  setSystemSettings,
+} from '../libs/storage';
 import path from 'path';
 import { readdirSync } from 'original-fs';
 import { QueueDisplaySettings } from '../../types/QueueDisplaySettings';
 import { QueueManager } from './../libs/Queue';
+import { systemSettingsValidationSchema } from '../../client/src/lib/yup/systemSettingsValidationSchema';
+import { queueSettingsValidationSchema } from '../../client/src/lib/yup/queueSettingsValidationSchema';
+import storage from 'electron-json-storage';
 
 export const router = Router();
 
@@ -46,6 +56,7 @@ router.post('/q/:queueName', async (req, res) => {
   const data: QueueDisplaySettings = req.body;
 
   try {
+    await queueSettingsValidationSchema.validate(data);
     await updateQueueSettings(data);
   } catch (e) {
     res.status(500).json({ success: false, message: e.message });
@@ -76,4 +87,35 @@ router.delete('/q/:queueName', async (req, res) => {
   QueueManager.removeQueue(queueName);
 
   res.json({ success: true });
+});
+
+router.get('/system-settings', (req, res) => {
+  res.json(getSystemSettings());
+});
+
+router.post('/system-settings', async (req, res) => {
+  const data = req.body;
+
+  try {
+    await systemSettingsValidationSchema.validate(data);
+    await setSystemSettings(data);
+  } catch (e) {
+    res.status(500).json({ success: false, message: e.message });
+    return;
+  }
+
+  res.json({ success: true });
+});
+
+router.delete('/all', (req, res) => {
+  storage.clear((error) => {
+    if (error) {
+      res.status(500).json({ success: false, message: error.message });
+      return;
+    }
+
+    QueueManager.removeAllQueues();
+
+    res.json({ success: true });
+  });
 });
