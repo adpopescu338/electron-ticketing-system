@@ -1,1 +1,1 @@
-npx electron-builder -mwl
+Built with `npx electron-builder --windows nsis:ia32`

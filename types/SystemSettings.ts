@@ -3,4 +3,5 @@ export type SystemSettings = {
   Q_ITEM_DISPLAY_TIME_SECONDS: number;
   MAX_NUMBER: number;
   START_NUMBER: number;
+  PORT: number;
 };

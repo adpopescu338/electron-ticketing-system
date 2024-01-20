@@ -5,3 +5,5 @@ client/build
 
 # .DS_Store in any directory
 **/.DS_Store
+.env
+build

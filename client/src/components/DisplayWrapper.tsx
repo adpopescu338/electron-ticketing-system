@@ -15,10 +15,13 @@ export const DisplayWrapper: React.FC<{
 }> = ({ children }) => {
   React.useEffect(() => {
     const listener = (e: KeyboardEvent) => {
+      console.log('Keydown', e.key);
       if (e.key === 'Escape') {
         if (document.fullscreenElement) {
+          console.log('In fullscreen. Existting fullscreen.');
           document.exitFullscreen();
         } else {
+          console.log('Not fullscreen, closing.');
           window.close();
         }
         return;
@@ -26,6 +29,7 @@ export const DisplayWrapper: React.FC<{
 
       // full screen
       if (e.key.toLowerCase() === 'f') {
+        console.log('Toggling fullscreen');
         // check if is already full screen
         if (document.fullscreenElement) {
           document.exitFullscreen();

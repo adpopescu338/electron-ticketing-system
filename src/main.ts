@@ -1,8 +1,11 @@
+import { config } from 'dotenv';
+config();
+import { getSystemSettings } from './libs/storage';
 import { app, BrowserWindow } from 'electron';
 import { startExpressApp } from './express/startExpressApp';
 import { QueueManager } from './libs/Queue';
 
-const PORT = 3001;
+const { PORT = 3001 } = getSystemSettings();
 
 function createWindow() {
   // Create the browser window.
@@ -11,6 +14,7 @@ function createWindow() {
       sandbox: false,
       preload: `${__dirname}/preload.js`,
     },
+    autoHideMenuBar: true, // This will auto hide the menu bar
     icon: `${__dirname}/../client/build/q.png`,
   });
 
@@ -27,6 +31,7 @@ function createWindow() {
         action: 'allow' as const,
         overrideBrowserWindowOptions: {
           fullscreen: true,
+          autoHideMenuBar: true, // This will auto hide the menu bar
         },
         outlivesOpener: true,
       };

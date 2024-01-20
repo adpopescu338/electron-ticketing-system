@@ -7,8 +7,6 @@ import {
   getSystemSettings,
   setSystemSettings,
 } from '../libs/storage';
-import path from 'path';
-import { readdirSync } from 'original-fs';
 import { QueueDisplaySettings } from '../../types/QueueDisplaySettings';
 import { QueueManager } from './../libs/Queue';
 import { systemSettingsValidationSchema } from '../../client/src/lib/yup/systemSettingsValidationSchema';
@@ -23,13 +21,12 @@ router.get('/q', (req, res) => {
 });
 
 router.get('/audios', (req, res) => {
-  const audiosPath = path.join(__dirname, '../../../client', 'build', 'audio');
+  // there are some issues with the directory path when running the app in dev mode vs when packaged
+  // so for now we will just hardcode the mp3 file names
+  // they're not dynamic anyway
+  const files = ['1.mp3', '2.mp3', '3.mp3', '4.mp3', '5.mp3', '6.mp3', '7.mp3'];
 
-  const dirFiles = readdirSync(audiosPath).filter((file) => {
-    return file.endsWith('.mp3');
-  });
-
-  res.json(dirFiles);
+  res.json(files);
 });
 
 router.post('/q/_new', async (req, res) => {

@@ -1,7 +1,7 @@
 {
-  "name": "electron-ticketing-system",
+  "name": "tick",
   "version": "1.0.0",
-  "description": "A queue management system built with Electron, TypeScript, Express, and Socket.IO.",
+  "description": "Queue management system.",
   "scripts": {
     "build:fe": "cd client && yarn build",
     "build": "tsc && yarn build:fe",
@@ -26,6 +26,7 @@
     "typescript": "^4.8.3"
   },
   "dependencies": {
+    "dotenv": "^16.3.2",
     "electron-json-storage": "^4.6.0",
     "express": "^4.18.2",
     "lodash": "^4.17.21",
@@ -52,7 +53,8 @@
     },
     "files": [
       "dist/**/*",
-      "client/build/**/*"
+      "client/build/**/*",
+      "!.env"
     ]
   }
 }

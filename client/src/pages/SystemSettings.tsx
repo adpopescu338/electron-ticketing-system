@@ -114,7 +114,6 @@ export const SystemSettings: React.FC = () => {
 
       <TextField
         fullWidth
-        id="START_NUMBER"
         name="START_NUMBER"
         label="Start Number"
         type="number"
@@ -124,6 +123,19 @@ export const SystemSettings: React.FC = () => {
         helperText={
           (formik.touched.START_NUMBER && formik.errors.START_NUMBER) ||
           'The number to start counting from. This will be the number displayed when a queue is created, and after the max number is reached.'
+        }
+      />
+
+      <TextField
+        fullWidth
+        name="PORT"
+        label="Application port."
+        type="number"
+        value={formik.values.PORT}
+        onChange={formik.handleChange}
+        error={formik.touched.PORT && Boolean(formik.errors.PORT)}
+        helperText={
+          (formik.touched.PORT && formik.errors.PORT) || 'The port to run the server on.'
         }
       />
 
