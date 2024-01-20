@@ -51,25 +51,29 @@ const displayIntructions =
 export const Home: React.FC = () => {
   const { queuesSettings, refetchQueuesSettings } = useCtx();
 
-  const handleDelete = async (queueName: string) => {
-    const proceed = await swal({
-      title: 'Are you sure?',
-      text: `Are you sure you want to delete ${queueName}?`,
-      icon: 'warning',
-      buttons: ['Cancel', 'Delete'],
-      dangerMode: true,
-    });
+  const hasQ = !!queuesSettings?.length;
 
-    if (!proceed) return;
+  const handleDelete = hasQ
+    ? null
+    : async (queueName: string) => {
+        const proceed = await swal({
+          title: 'Are you sure?',
+          text: `Are you sure you want to delete ${queueName}?`,
+          icon: 'warning',
+          buttons: ['Cancel', 'Delete'],
+          dangerMode: true,
+        });
 
-    try {
-      await axios.delete(`/api/q/${queueName}`);
-      refetchQueuesSettings();
-      swal('Success', 'Queue deleted', 'success');
-    } catch (error) {
-      swal('Error', 'Something went wrong', 'error');
-    }
-  };
+        if (!proceed) return;
+
+        try {
+          await axios.delete(`/api/q/${queueName}`);
+          refetchQueuesSettings();
+          swal('Success', 'Queue deleted', 'success');
+        } catch (error) {
+          swal('Error', 'Something went wrong', 'error');
+        }
+      };
 
   const handleDeleteEverything = async () => {
     const proceed = await swal({
@@ -126,7 +130,7 @@ export const Home: React.FC = () => {
               </Link>
             </Tooltip>
             <Tooltip title="Delete this queue permanently. This action cannot be undone.">
-              <IconButton color="error" onClick={() => handleDelete(queue.name)}>
+              <IconButton color="error" onClick={() => handleDelete!(queue.name)}>
                 Delete&nbsp;
                 <DeleteIcon />
               </IconButton>
@@ -144,23 +148,27 @@ export const Home: React.FC = () => {
         </Link>
       </Tooltip>
 
-      <Tooltip title={`Open all queues in a new display tab. ${displayIntructions}`}>
-        <Link href="/display" target="_blank" sx={linkStyle}>
-          <IconButton color="primary">
-            Display all&nbsp;
-            <QueuePlayNextIcon />
-          </IconButton>
-        </Link>
-      </Tooltip>
+      {hasQ && (
+        <Tooltip title={`Open all queues in a new display tab. ${displayIntructions}`}>
+          <Link href="/display" target="_blank" sx={linkStyle}>
+            <IconButton color="primary">
+              Display all&nbsp;
+              <QueuePlayNextIcon />
+            </IconButton>
+          </Link>
+        </Tooltip>
+      )}
 
-      <Tooltip title="This will not save your settings, but you can use it to display your queues in a personalized way. You will be able to select which queues to display and customize their appearance.">
-        <Link href="/custom-display" sx={linkStyle}>
-          <IconButton color="primary">
-            Create a personalized display for this session only&nbsp;
-            <TuneIcon />
-          </IconButton>
-        </Link>
-      </Tooltip>
+      {hasQ && (
+        <Tooltip title="This will not save your settings, but you can use it to display your queues in a personalized way. You will be able to select which queues to display and customize their appearance.">
+          <Link href="/custom-display" sx={linkStyle}>
+            <IconButton color="primary">
+              Create a personalized display for this session only&nbsp;
+              <TuneIcon />
+            </IconButton>
+          </Link>
+        </Tooltip>
+      )}
 
       <Tooltip title="Edit system settings, like number or message duration, max or min number (like 0 and 99), etc.">
         <Link href="/system-settings" sx={linkStyle}>

@@ -57,8 +57,7 @@ const QueueContainer = styled.div<{
 const Row = styled.div<{ highlight: boolean }>`
   display: flex;
   justify-content: space-between;
-  padding: 0 1rem;
-  height: 100%;
+  padding: 10px;
   background-color: ${({ highlight }) => (highlight ? '#fff3cf' : 'transparent')};
   border-radius: 5px;
 `;

@@ -14,10 +14,7 @@ const Div = styled.div`
 `;
 
 export const GlobalBackButton: React.FC = () => {
-  const isInElectron = !!(window as any)?.isInElectron?.();
   const url = window.location.href;
-
-  if (!isInElectron) return null;
 
   // no icon on display page
   if (url.includes('/display')) return null;

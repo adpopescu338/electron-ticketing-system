@@ -9,7 +9,7 @@ import { useSocket } from '../../../hooks/useSocket';
 const Container = styled.div`
   max-width: 700px;
   position: absolute;
-  top: 10px;
+  top: 50px;
   left: 10px;
   display: flex;
   flex-direction: column;
