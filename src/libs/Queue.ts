@@ -276,6 +276,7 @@ class QueueManagerCl {
 
 const logger = {
   debug: (...args: unknown[]) => {
+    if (process.env.NODE_ENV === 'development') return;
     console.log(...args);
   },
 };
