@@ -1,6 +1,6 @@
 {
   "name": "tick",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Queue management system.",
   "scripts": {
     "build:fe": "cd client && yarn build",
