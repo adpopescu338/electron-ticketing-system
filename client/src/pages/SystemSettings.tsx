@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useFormik } from 'formik';
 import { TextField, Button, CircularProgress } from '@mui/material';
 import axios from 'axios';
 import { systemSettingsValidationSchema } from 'lib/yup/systemSettingsValidationSchema';
 import swal from 'sweetalert';
 import styled from 'styled-components';
-import { DEFAULT_SYSTEM_SETTINGS } from 'lib/constants';
+import { useSystemSettings } from 'hooks/useSystemSettings';
 
 const Form = styled.form`
   width: 50%;
@@ -22,21 +22,7 @@ const Form = styled.form`
 `;
 
 export const SystemSettings: React.FC = () => {
-  const [initialValues, setInitialValues] = useState(DEFAULT_SYSTEM_SETTINGS);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        const response = await axios.get('/api/system-settings');
-        setInitialValues(response.data);
-      } catch (error) {
-        console.error('Failed to fetch system settings:', error);
-      }
-      setLoading(false);
-    };
-    fetchSettings();
-  }, []);
+  const [initialValues, loading] = useSystemSettings();
 
   const formik = useFormik({
     initialValues: initialValues,
@@ -134,9 +120,7 @@ export const SystemSettings: React.FC = () => {
         value={formik.values.PORT}
         onChange={formik.handleChange}
         error={formik.touched.PORT && Boolean(formik.errors.PORT)}
-        helperText={
-          (formik.touched.PORT && formik.errors.PORT) || 'The port to run the server on.'
-        }
+        helperText={(formik.touched.PORT && formik.errors.PORT) || 'The port to run the server on.'}
       />
 
       <Button color="primary" variant="contained" type="submit">

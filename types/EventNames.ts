@@ -1,1 +1,7 @@
-export type EventNames = 'update' | 'joinQueue' | 'sendNextReq' | 'messageSent' | 'nextItemAdded';
+export type EventNames =
+  | 'update'
+  | 'joinQueue'
+  | 'sendNextReq'
+  | 'messageSent'
+  | 'nextItemAdded'
+  | 'callSpecificNumber';

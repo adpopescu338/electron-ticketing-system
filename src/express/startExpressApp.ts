@@ -36,6 +36,14 @@ io.on('connection', (socket) => {
     const queueName = findSocketQueueName(socket);
     QueueManager.message(queueName, message);
   });
+
+  socket.on(
+    'callSpecificNumber' satisfies EventNames,
+    (desk: number, numberToCall: number, resetCountFromThis: boolean) => {
+      const queueName = findSocketQueueName(socket);
+      QueueManager.callSpecificNumber(queueName, desk, numberToCall, resetCountFromThis);
+    }
+  );
 });
 
 app.use(express.json());

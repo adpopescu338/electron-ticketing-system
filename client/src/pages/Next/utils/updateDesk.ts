@@ -1,3 +1,4 @@
+import { isSwalNumberValid } from 'lib/isSwalNumberValid';
 import swal from 'sweetalert';
 
 export const updateDesk = async (setDesk: (desk: number) => void): Promise<void> => {
@@ -16,11 +17,7 @@ export const updateDesk = async (setDesk: (desk: number) => void): Promise<void>
     closeOnClickOutside: false,
   });
 
-  const parsedValue = Number(value);
-
-  const isInvalid = isNaN(parsedValue) || parsedValue < 0 || parsedValue > 100 || value === '';
-
-  if (isInvalid) {
+  if (!isSwalNumberValid(value)) {
     await swal({
       title: 'Invalid desk number',
       icon: 'error',
@@ -32,6 +29,8 @@ export const updateDesk = async (setDesk: (desk: number) => void): Promise<void>
 
     return updateDesk(setDesk);
   }
+
+  const parsedValue = Number(value);
 
   localStorage.setItem('desk', String(parsedValue));
   setDesk(parsedValue);

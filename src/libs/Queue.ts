@@ -102,16 +102,54 @@ class QueueManagerCl {
 
     const { nextItems, currentItems } = queue;
 
-    const followingItem = nextItems.at(-1) ?? currentItems[0];
+    const followingItem =
+      this.findNextNonExemptItem([...nextItems].reverse()) ??
+      this.findNextNonExemptItem(currentItems);
 
     const newItem: QItem = {
       number: this.safeNextNumber(followingItem?.number),
       desk,
       createdAt: Date.now(),
       displayedAt: null,
+      exemptFromCount: false,
     };
 
     logger.debug(`Queue::next:: newItem, nr ${newItem.number}, desk: ${newItem.desk}`);
+
+    nextItems.push(newItem);
+
+    this.emitItemAdded(queueName, nextItems);
+  }
+
+  private findNextNonExemptItem(items: QItem[]): QItem | undefined {
+    return items.find((item) => {
+      if (item.exemptFromCount) return false;
+      return true;
+    });
+  }
+
+  public callSpecificNumber(
+    queueName: string,
+    desk: number,
+    numberToCall: number,
+    resetCountFromThis: boolean
+  ): void {
+    const queue = this.qs[queueName];
+    if (!queue) return null;
+
+    const { nextItems } = queue;
+
+    const newItem: QItem = {
+      number: numberToCall,
+      desk,
+      createdAt: Date.now(),
+      displayedAt: null,
+      exemptFromCount: resetCountFromThis,
+    };
+
+    logger.debug(
+      `Queue::callSpecificNumber:: newItem, nr ${newItem.number}, desk: ${newItem.desk}`
+    );
 
     nextItems.push(newItem);
 

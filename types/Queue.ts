@@ -3,6 +3,7 @@ export type QItem = {
   desk: number;
   createdAt: number;
   displayedAt: number | null;
+  exemptFromCount?: boolean;
 };
 
 export type QMessage = {

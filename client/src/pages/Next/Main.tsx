@@ -40,7 +40,11 @@ const DashboardWorker: React.FC<{ queueSettings: QueueDisplaySettings }> = ({ qu
   return (
     <div>
       <Desk desk={desk} setDesk={setDesk} />
-      <NextButton desk={desk} queueName={queueSettings.name} />
+      <NextButton
+        desk={desk}
+        queueName={queueSettings.name}
+        currentNumber={queueData.currentItems[0]?.number}
+      />
       <QDisplayer settings={queueSettings} queueData={queueData} currentDesk={desk} />
       <SendMessage queueName={queueSettings.name} queueData={queueData} />
     </div>
