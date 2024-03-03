@@ -8,11 +8,10 @@ import { QueueManager } from './libs/Queue';
 const { PORT = 3001 } = getSystemSettings();
 
 function createWindow() {
-  // Create the browser window.
+  // Create the browser window
   const mainWindow = new BrowserWindow({
     webPreferences: {
       sandbox: false,
-      preload: `${__dirname}/preload.js`,
     },
     autoHideMenuBar: true, // This will auto hide the menu bar
     icon: `${__dirname}/../client/build/q.png`,
@@ -21,7 +20,7 @@ function createWindow() {
   mainWindow.maximize();
 
   // and load the app.
-  mainWindow.loadURL(`http://localhost:${PORT}`);
+  mainWindow.loadURL(`http://localhost:${process.env.NODE_ENV === 'development' ? PORT : 3000}`);
 
   // Listen for new window creation
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {

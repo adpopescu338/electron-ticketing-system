@@ -49,7 +49,7 @@ const displayIntructions =
   "Press 'f' to toggle full screen. Press 'esc' to exit full screen, or to close the display.";
 
 export const Home: React.FC = () => {
-  const { queuesSettings, refetchQueuesSettings } = useCtx();
+  const { queuesSettings = [], refetchQueuesSettings } = useCtx();
 
   const hasQ = !!queuesSettings?.length;
 

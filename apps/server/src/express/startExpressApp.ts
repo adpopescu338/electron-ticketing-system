@@ -49,7 +49,7 @@ io.on('connection', (socket) => {
 app.use(express.json());
 app.use('/api', router);
 
-export const clientBuildPath = path.join(__dirname, '../../../client', 'build');
+export const clientBuildPath = path.join(process.cwd(), '../client', 'dist');
 
 // set cache headers for files in audio folder
 app.use('/audio', (req, res) => {

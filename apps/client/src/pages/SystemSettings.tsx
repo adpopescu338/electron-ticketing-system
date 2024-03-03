@@ -30,7 +30,7 @@ export const SystemSettings: React.FC = () => {
     onSubmit: (values) => {
       axios
         .post('/api/system-settings', values)
-        .then((response) => {
+        .then(() => {
           swal('Success', 'Settings updated', 'success');
         })
         .catch((error) => {
