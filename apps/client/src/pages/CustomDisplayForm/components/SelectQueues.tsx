@@ -32,7 +32,7 @@ export const SelectQueues: React.FC<{
         multiple
         options={queueNames}
         getOptionLabel={(option) => option}
-        onChange={(e, value) => setSelectedQueues(value)}
+        onChange={(_, value) => setSelectedQueues(value)}
         value={selectedQueues}
         renderInput={(params) => (
           <TextField

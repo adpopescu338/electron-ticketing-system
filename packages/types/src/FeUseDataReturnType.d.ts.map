@@ -1,1 +1,0 @@
-{"version":3,"file":"FeUseDataReturnType.d.ts","sourceRoot":"","sources":["FeUseDataReturnType.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,KAAK,EAAE,KAAK,EAAE,MAAM,SAAS,CAAC;AAEvC,MAAM,MAAM,mBAAmB,GAAG,IAAI,CAAC,KAAK,EAAE,cAAc,CAAC,GAAG;IAC9D,YAAY,EAAE,KAAK,CAAC,KAAK,GAAG,IAAI,CAAC,CAAC;CACnC,CAAC"}

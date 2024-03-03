@@ -12,7 +12,7 @@ import {
 import isValidProp from '@emotion/is-prop-valid';
 import { StyleSheetManager } from 'styled-components';
 import { CtxProvider } from './components/Ctx';
-import { GlobalBackButton } from 'components/GlobalBackButton';
+import { GlobalBackButton } from './components/GlobalBackButton';
 
 function App() {
   return (
