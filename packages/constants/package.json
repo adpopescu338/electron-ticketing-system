@@ -1,0 +1,9 @@
+{
+  "name": "@repo/constants",
+  "version": "0.0.1",
+  "scripts":{
+    "build": "tsc -p tsconfig.json"
+  },
+  "type": "commonjs",
+  "main": "./src/index.ts"
+}

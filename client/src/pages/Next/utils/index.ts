@@ -1,1 +1,0 @@
-export { updateDesk } from './updateDesk';

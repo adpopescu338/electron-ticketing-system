@@ -1,9 +1,9 @@
-node_modules
-dist
-client/node_modules
-client/build
+**/node_modules
+**/.turbo
+**/dist
+**/build
+
 
 # .DS_Store in any directory
 **/.DS_Store
 .env
-build
