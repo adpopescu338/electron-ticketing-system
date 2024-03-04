@@ -8,7 +8,7 @@ import {
   setSystemSettings,
 } from '../libs/storage';
 import { QueueDisplaySettings } from '@repo/types';
-import { QueueManager } from './../libs/Queue';
+import { QueueManagers } from './../libs/Queue';
 import { systemSettingsValidationSchema, queueSettingsValidationSchema } from '@repo/validation';
 import storage from 'electron-json-storage';
 
@@ -45,7 +45,7 @@ router.post('/q/_new', async (req, res) => {
     return;
   }
 
-  QueueManager.addQueue(data.name);
+  QueueManagers.addQueue(data.name);
 
   res.json({ success: true });
 });
@@ -84,7 +84,7 @@ router.delete('/q/:queueName', async (req, res) => {
     return;
   }
 
-  QueueManager.removeQueue(queueName);
+  QueueManagers.removeQueue(queueName);
 
   res.json({ success: true });
 });
@@ -115,7 +115,7 @@ router.delete('/all', (req, res) => {
       return;
     }
 
-    QueueManager.removeAllQueues();
+    QueueManagers.removeAllQueues();
 
     res.json({ success: true });
   });

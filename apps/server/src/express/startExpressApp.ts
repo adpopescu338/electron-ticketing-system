@@ -1,4 +1,4 @@
-import { QueueManager } from './../libs/Queue';
+import { QueueManagers } from './../libs/Queue';
 import { EventNames } from '@repo/types';
 import express from 'express';
 import path from 'path';
@@ -12,7 +12,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-QueueManager.init(io);
+QueueManagers.init(io);
 
 io.on('connection', (socket) => {
   socket.on('joinQueue' satisfies EventNames, (queueName: string) => {
@@ -24,24 +24,30 @@ io.on('connection', (socket) => {
 
     socket.join(queueName);
 
-    QueueManager.emitUpdate(queueName, socket);
+    const QueueManager = QueueManagers.get(queueName);
+
+    QueueManager.emitUpdate(socket);
   });
 
   socket.on('sendNextReq' satisfies EventNames, (desk: number) => {
     const queueName = findSocketQueueName(socket);
-    QueueManager.next(queueName, desk);
+    const QueueManager = QueueManagers.get(queueName);
+
+    QueueManager.next(desk);
   });
 
   socket.on('messageSent' satisfies EventNames, (message: string) => {
     const queueName = findSocketQueueName(socket);
-    QueueManager.message(queueName, message);
+    const QueueManager = QueueManagers.get(queueName);
+    QueueManager.message(message);
   });
 
   socket.on(
     'callSpecificNumber' satisfies EventNames,
     (desk: number, numberToCall: number, resetCountFromThis: boolean) => {
       const queueName = findSocketQueueName(socket);
-      QueueManager.callSpecificNumber(queueName, desk, numberToCall, resetCountFromThis);
+      const QueueManager = QueueManagers.get(queueName);
+      QueueManager.callSpecificNumber(desk, numberToCall, resetCountFromThis);
     }
   );
 });

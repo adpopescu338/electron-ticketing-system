@@ -4,7 +4,7 @@ import { IconButton } from '@mui/material';
 import ScheduleSendIcon from '@mui/icons-material/ScheduleSend';
 import { EventNames, FeUseDataReturnType } from '@repo/types';
 import React from 'react';
-import { useSocket } from '../../../hooks/useSocket';
+import { useSocket } from 'hooks/useSocket';
 
 const Container = styled.div`
   max-width: 700px;

@@ -62,12 +62,18 @@ export const NextButton: React.FC<{
       buttons: ['Cancel', 'Confirm'],
     });
 
+    if (number === null) return;
+
     if (!isSwalNumberValid(number, systemSettings.START_NUMBER, systemSettings.MAX_NUMBER)) {
-      await swal('Invalid number', 'Please enter a valid number', 'error');
+      await swal(
+        'Invalid number',
+        `Please enter a number between ${systemSettings.START_NUMBER} and ${systemSettings.MAX_NUMBER}`,
+        'error'
+      );
       return;
     }
 
-    let intVal = Number(number);
+    const intVal = Number(number);
 
     // yes, no
     const countShouldFollowFromThisNumber = await swal(

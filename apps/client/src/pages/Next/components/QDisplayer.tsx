@@ -37,11 +37,12 @@ const QueueContainer = styled.div<{
 }>`
   opacity: ${({ hide }) => (hide ? 0 : 1)};
   width: 320px;
-  padding: 0 10px;
+  padding: 0 10px 10px 10px;
   height: 300px;
   box-shadow: 0 0 5px 0 black;
   border-radius: 5px;
   display: flex;
+  gap: 5px;
   flex-direction: column;
   font-size: 3.5rem;
   text-align: center;
@@ -60,6 +61,7 @@ const Row = styled.div<{ highlight: boolean }>`
   padding: 10px;
   background-color: ${({ highlight }) => (highlight ? '#fff3cf' : 'transparent')};
   border-radius: 5px;
+  border: 1px solid #000;
 `;
 
 const QueueDisplayer: React.FC<{
@@ -80,10 +82,10 @@ const QueueDisplayer: React.FC<{
       {items.map((item, i) => {
         if (item === null) {
           return (
-            <div key={i} className="row">
+            <Row highlight={false} key={`${i}`}>
               <span>-</span>
               <span>-</span>
-            </div>
+            </Row>
           );
         }
         return (

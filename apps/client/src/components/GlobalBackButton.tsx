@@ -21,6 +21,7 @@ export const GlobalBackButton: React.FC = () => {
 
   return (
     <Div>
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <IconButton onClick={() => (window as any).history.back()} color="primary">
         <ArrowBackIcon />
       </IconButton>

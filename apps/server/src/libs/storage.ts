@@ -43,13 +43,12 @@ export const setQueueState = (queueName: string, items: QItem[]): Promise<void> 
       if (error) {
         reject(error);
       }
-
       resolve();
     });
   });
 
 export const getQueueState = (queueName: string): QItem[] => {
-  const persistedItems = storage.getSync(queueName) as {
+  const persistedItems = storage.getSync(`queueState::${queueName}`) as {
     items: QItem[];
   };
 

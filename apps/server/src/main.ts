@@ -3,7 +3,7 @@ config();
 import { getSystemSettings } from './libs/storage';
 import { app, BrowserWindow } from 'electron';
 import { startExpressApp } from './express/startExpressApp';
-import { QueueManager } from './libs/Queue';
+import { QueueManagers } from './libs/Queue';
 
 const { PORT = 3001 } = getSystemSettings();
 
@@ -58,7 +58,7 @@ app.whenReady().then(async () => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', async () => {
-  await QueueManager.shutdown();
+  await QueueManagers.shutdown();
   app.quit();
 });
 

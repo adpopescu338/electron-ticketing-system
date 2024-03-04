@@ -1,74 +1,51 @@
-import { EventNames, QItem, QMessage, Queues, SystemSettings } from '@repo/types';
-import { getQueuesState, getSystemSettings, setQueueState } from './storage';
+import { EventNames, QItem, QMessage, Queue, Queues, SystemSettings } from '@repo/types';
+import { getSystemSettings, setQueueState, QueueNames, getQueueState } from './storage';
 import { isNil } from 'lodash';
 import { Server as Socket } from 'socket.io';
 import { Socket as SocketType } from 'socket.io';
 
 class QueueManagerCl {
-  qs: Queues;
+  queueName: string;
+  queue: Queue;
   settings: SystemSettings;
   socket: Socket;
-  INTERVAL_MS = 1500;
-  intervals: {
-    [queueName: string]: NodeJS.Timeout;
-  } = {};
+  logger: ReturnType<typeof createLogger>;
+  timeout: NodeJS.Timeout;
+  timeoutExpiresAt: number;
+
+  constructor(queueName: string) {
+    this.queueName = queueName;
+    this.logger = createLogger(queueName);
+    this.settings = getSystemSettings();
+  }
 
   init(socket: Socket): void {
     this.socket = socket;
-    this.settings = getSystemSettings();
-    const queuesState = getQueuesState();
+    const queueStateItems = getQueueState(this.queueName);
 
-    this.qs = Object.entries(queuesState).reduce((acc, [queueName, items]) => {
-      acc[queueName] = {
-        currentItems: items,
-        nextItems: [],
-        message: null,
-      };
-      return acc;
-    }, {} as Queues);
-
-    Object.keys(this.qs).forEach((queueName) => {
-      this.intervals[queueName] = setInterval(() => {
-        this.handleBackground(queueName);
-      }, this.INTERVAL_MS);
-    });
-  }
-
-  public addQueue(queueName: string): void {
-    this.qs[queueName] = {
-      currentItems: [],
+    this.queue = {
+      currentItems: queueStateItems,
       nextItems: [],
       message: null,
     };
-    this.intervals[queueName] = setInterval(() => {
-      this.handleBackground(queueName);
-    }, this.INTERVAL_MS);
   }
 
-  public removeQueue(queueName: string): void {
-    delete this.qs[queueName];
-    clearInterval(this.intervals[queueName]);
-    delete this.intervals[queueName];
+  public removeQueue(): void {
+    clearInterval(this.timeout);
+    delete this.timeout;
   }
 
   public async shutdown(): Promise<void> {
-    Object.values(this.intervals).forEach((interval) => {
-      clearInterval(interval);
-    });
+    clearTimeout(this.timeout);
 
-    await Promise.all(
-      Object.entries(this.qs).map(([queueName, queue]) => {
-        return setQueueState(queueName, queue.currentItems);
-      })
-    );
+    await setQueueState(this.queueName, this.queue.currentItems);
   }
 
-  message(queueName: string, message: string): void {
-    const queue = this.qs[queueName];
-    if (!queue) return null;
+  public message(message: string): void {
+    const queue = this.queue;
 
     if (queue.message) {
-      logger.debug('Queue::message:: Message already exists, not overwriting');
+      this.logger.debug('message:: Message already exists, not overwriting');
       return;
     }
 
@@ -80,27 +57,22 @@ class QueueManagerCl {
 
     // let clients know that a message has been sent
     // so incoming messages are blocked
-    this.emitUpdate(queueName);
+    this.emitUpdate();
+    this.handleBackground();
   }
 
-  private handleMessageEnd(queueName: string) {
-    const q = this.qs[queueName];
+  private handleMessageEnd() {
+    const q = this.queue;
     if (!q.currentItems.length && !q.nextItems.length) {
-      logger.debug('Queue::handleMessageEnd:: No items in queue, keeping message');
+      this.logger.debug('handleMessageEnd:: No items in queue, keeping message');
       return;
     }
-    delete this.qs[queueName].message;
-    this.emitUpdate(queueName);
+    delete this.queue.message;
+    this.emitUpdate();
   }
 
-  public next(queueName: string, desk: number): Promise<void> {
-    const queue = this.qs[queueName];
-    if (!queue) {
-      logger.debug(`Queue::next:: Queue ${queueName} not found in ${Object.keys(this.qs)}`);
-      return null;
-    }
-
-    const { nextItems, currentItems } = queue;
+  public next(desk: number): void {
+    const { nextItems, currentItems } = this.queue;
 
     const followingItem =
       this.findNextNonExemptItem([...nextItems].reverse()) ??
@@ -114,11 +86,12 @@ class QueueManagerCl {
       exemptFromCount: false,
     };
 
-    logger.debug(`Queue::next:: newItem, nr ${newItem.number}, desk: ${newItem.desk}`);
+    this.logger.debug(`next:: newItem, nr ${newItem.number}, desk: ${newItem.desk}`);
 
     nextItems.push(newItem);
 
-    this.emitItemAdded(queueName, nextItems);
+    this.emitItemAdded(nextItems);
+    this.handleBackground();
   }
 
   private findNextNonExemptItem(items: QItem[]): QItem | undefined {
@@ -128,16 +101,8 @@ class QueueManagerCl {
     });
   }
 
-  public callSpecificNumber(
-    queueName: string,
-    desk: number,
-    numberToCall: number,
-    resetCountFromThis: boolean
-  ): void {
-    const queue = this.qs[queueName];
-    if (!queue) return null;
-
-    const { nextItems } = queue;
+  public callSpecificNumber(desk: number, numberToCall: number, resetCountFromThis: boolean): void {
+    const { nextItems } = this.queue;
 
     const newItem: QItem = {
       number: numberToCall,
@@ -147,69 +112,73 @@ class QueueManagerCl {
       exemptFromCount: resetCountFromThis,
     };
 
-    logger.debug(
-      `Queue::callSpecificNumber:: newItem, nr ${newItem.number}, desk: ${newItem.desk}`
-    );
+    this.logger.debug(`callSpecificNumber:: newItem, nr ${newItem.number}, desk: ${newItem.desk}`);
 
     nextItems.push(newItem);
 
-    this.emitItemAdded(queueName, nextItems);
+    this.emitItemAdded(nextItems);
+    this.handleBackground();
   }
 
-  private handleBackground(queueName: string) {
-    const { currentItems, message, nextItems } = this.qs[queueName];
+  private handleBackground() {
+    const { currentItems, message, nextItems } = this.queue;
     const [mostRecentItem] = currentItems;
 
     if (message) {
       if (message.displayedAt === null) {
-        logger.debug('Queue::handleBackground:: Message found but not displayed yet');
+        this.logger.debug('handleBackground:: Message found but not displayed yet');
         // a message was added, but it hasn't been displayed yet
         // check if the most recent item has completed its display time
 
         if (mostRecentItem && this.displayTimePassed(mostRecentItem)) {
-          logger.debug(
-            'Queue::handleBackground:: Most recent item display time passed, time to display the message'
+          this.logger.debug(
+            'handleBackground:: Most recent item display time passed, time to display the message'
           );
 
           message.displayedAt = Date.now();
 
-          this.emitUpdate(queueName);
+          this.emitUpdate();
+          this.setTimeout(message);
           return;
         } else {
-          logger.debug(
-            'Queue::handleBackground:: Most recent item display time not passed, waiting for it to pass'
+          this.logger.debug(
+            'handleBackground:: Most recent item display time not passed, waiting for it to pass'
           );
+          this.setTimeout(message);
+          return;
         }
       }
 
       if (this.displayTimePassed(message)) {
-        logger.debug('Queue::handleBackground:: Message display time passed');
-        this.handleMessageEnd(queueName);
+        this.logger.debug('handleBackground:: Message display time passed');
+        this.handleMessageEnd();
       } else {
-        logger.debug('Queue::handleBackground:: Message display time not passed');
+        this.logger.debug('handleBackground:: Message display time not passed');
         // no need to do anything, it will resume in the next iteration
+        this.setTimeout(message);
         return;
       }
     }
 
     if (mostRecentItem) {
-      logger.debug('Queue::handleBackground:: Most recent item found');
+      this.logger.debug('handleBackground:: Most recent item found');
       if (!this.displayTimePassed(mostRecentItem)) {
-        logger.debug('Queue::handleBackground:: Most recent item display time not passed');
+        this.logger.debug('handleBackground:: Most recent item display time not passed');
+        this.setTimeout(mostRecentItem);
         return;
       }
     }
 
     if (nextItems.length) {
-      logger.debug('Queue::handleBackground:: Next item found');
+      this.logger.debug('handleBackground:: Next item found');
       // move next item to current items
       const itemToMoveFromNextToCurrent = nextItems.shift();
       itemToMoveFromNextToCurrent.displayedAt = Date.now();
       currentItems.unshift(itemToMoveFromNextToCurrent);
-      this.resizeCurrentItems(queueName);
-      this.emitUpdate(queueName);
-
-      logger.debug('Queue::handleBackground:: Next item moved to current items');
+      this.resizeCurrentItems();
+      this.emitUpdate();
+      this.setTimeout(itemToMoveFromNextToCurrent);
+      this.logger.debug('handleBackground:: Next item moved to current items');
     }
   }
 
@@ -227,58 +196,132 @@ class QueueManagerCl {
     return passed;
   }
 
+  private getTimeDiff(item: QItem | QMessage) {
+    const { displayedAt } = item;
+    if (!displayedAt) return null;
+    return Date.now() - displayedAt;
+  }
+
+  private setTimeout(item: QItem | QMessage) {
+    const timeDiff = this.getTimeDiff(item);
+    if (timeDiff === null) {
+      this.logger.debug('setTimeout:: timeDiff is null, returning');
+      return;
+    }
+
+    const now = Date.now();
+
+    if (this.timeoutExpiresAt > now && this.timeoutExpiresAt < now + timeDiff) {
+      this.logger.debug('setTimeout:: there is already a closer timeout, returning');
+      return;
+    }
+
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+
+    this.timeout = setTimeout(this.handleBackground.bind(this), timeDiff);
+    this.timeoutExpiresAt = now + timeDiff;
+  }
+
   private safeNextNumber(prev: number | undefined) {
     if (isNil(prev)) {
-      logger.debug(`Queue::safeNextNumber:: prev is nil, returning ${this.settings.START_NUMBER}`);
+      this.logger.debug(`safeNextNumber:: prev is nil, returning ${this.settings.START_NUMBER}`);
       return this.settings.START_NUMBER;
     }
     const newNumber = prev + 1;
     if (newNumber > this.settings.MAX_NUMBER) {
-      logger.debug(
-        'Queue::safeNextNumber:: newNumber > MAX_NUMBER',
+      this.logger.debug(
+        'safeNextNumber:: newNumber > MAX_NUMBER',
         newNumber,
         `returning ${this.settings.START_NUMBER}`
       );
       return this.settings.START_NUMBER;
     }
-    logger.debug('Queue::safeNextNumber:: newNumber', newNumber);
+    this.logger.debug('safeNextNumber:: newNumber', newNumber);
     return newNumber;
   }
 
-  private resizeCurrentItems(queueName: string) {
-    const { currentItems } = this.qs[queueName];
+  private resizeCurrentItems() {
+    const { currentItems } = this.queue;
     if (currentItems.length > 10) {
       currentItems.splice(10);
     }
   }
 
-  public emitUpdate(queueName: string, specificSocket?: SocketType): void {
-    logger.debug(`Queue::emitUpdate, emitting update to ${queueName}`);
+  public emitUpdate(specificSocket?: SocketType): void {
+    this.logger.debug(`emitUpdate, emitting update`);
     if (specificSocket) {
-      specificSocket.emit('update' satisfies EventNames, this.qs[queueName]);
+      specificSocket.emit('update' satisfies EventNames, this.queue);
       return;
     }
 
-    this.socket.to(queueName).emit('update' satisfies EventNames, this.qs[queueName]);
+    this.socket.to(this.queueName).emit('update' satisfies EventNames, this.queue);
   }
 
-  private emitItemAdded(queueName: string, nextItems: QItem[]): void {
-    logger.debug(`Queue::emitItemAdded, emitting itemAdded to ${queueName}`);
-    this.socket.to(queueName).emit('nextItemAdded' satisfies EventNames, nextItems);
-  }
-
-  public removeAllQueues(): void {
-    Object.keys(this.qs).forEach((queueName) => {
-      this.removeQueue(queueName);
-    });
+  private emitItemAdded(nextItems: QItem[]): void {
+    this.logger.debug(`emitItemAdded, emitting itemAdded`);
+    this.socket.to(this.queueName).emit('nextItemAdded' satisfies EventNames, nextItems);
   }
 }
 
-const logger = {
-  debug: (...args: unknown[]) => {
-    if (process.env.NODE_ENV === 'development') return;
-    console.log(...args);
-  },
+const createLogger = (queueName: string) => {
+  if (!queueName) throw new Error('Queue name is required');
+  return {
+    debug: (...args: unknown[]) => {
+      if (process.env.NODE_ENV !== 'development') return;
+      console.log(`Queue::[${queueName}]`, ...args);
+    },
+  };
 };
 
-export const QueueManager = new QueueManagerCl();
+class QueueManagersCl {
+  private qm: Map<string, QueueManagerCl> = new Map();
+  private socket: Socket;
+
+  constructor() {
+    for (const queueName of QueueNames) {
+      const qm = new QueueManagerCl(queueName);
+      this.qm.set(queueName, qm);
+    }
+  }
+
+  init(io: Socket) {
+    this.socket = io;
+    for (const queueName of QueueNames) {
+      this.qm.get(queueName).init(io);
+    }
+  }
+
+  public get(queueName: string): QueueManagerCl {
+    return this.qm.get(queueName);
+  }
+
+  public removeQueue(queueName: string): void {
+    this.qm.get(queueName).removeQueue();
+    this.qm.delete(queueName);
+  }
+
+  public removeAllQueues(): void {
+    for (const qm of this.qm.values()) {
+      qm.removeQueue();
+    }
+    this.qm.clear();
+  }
+
+  public addQueue(queueName: string): void {
+    const qm = new QueueManagerCl(queueName);
+    qm.init(this.socket);
+    this.qm.set(queueName, qm);
+  }
+
+  public shutdown(): Promise<void[]> {
+    const promises = [];
+    for (const qm of this.qm.values()) {
+      promises.push(qm.shutdown());
+    }
+    return Promise.all(promises);
+  }
+}
+
+export const QueueManagers = new QueueManagersCl();
