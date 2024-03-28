@@ -14,7 +14,7 @@
     "copy-server": "cp -r ./apps/server/dist/main.js ./dist",
     "copy-client": "cp -r ./apps/client/dist/ ./dist",
     "copy-electron": "cp -r ./node_modules/electron/ ./dist",
-    "prepackage": "mkdir -p ./dist && yarn copy-electron && yarn run copy-server && yarn run copy-client",
+    "prepackage": "mkdir -p ./dist && yarn run copy-server && yarn run copy-client",
     "package": "yarn prepackage && npx electron-builder --mac",
     "postinstall": "node ./node_modules/electron/install.js"
   },
@@ -35,7 +35,6 @@
     "@types/express": "^4.17.21",
     "@types/lodash": "^4.14.202",
     "concurrently": "^8.2.2",
-    "electron": "29.1.0",
     "turbo": "^1.12.4",
     "typescript": "^5.3.3"
   },

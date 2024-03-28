@@ -3,6 +3,8 @@ import { QueueDisplaySettings, QItem, SystemSettings } from '@repo/types';
 import { isEmpty } from 'lodash';
 import { DEFAULT_SYSTEM_SETTINGS } from '@repo/constants';
 
+storage.setDataPath(undefined);
+
 export const getQueuesSettings = (): QueueDisplaySettings[] => {
   const queuesSettings = storage.getSync('queues') as {
     queues: QueueDisplaySettings[];
