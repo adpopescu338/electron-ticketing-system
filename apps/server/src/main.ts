@@ -1,5 +1,3 @@
-import { config } from 'dotenv';
-config();
 import { getSystemSettings } from './libs/storage';
 import { app, BrowserWindow } from 'electron';
 import { startExpressApp } from './express/startExpressApp';
