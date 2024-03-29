@@ -17,8 +17,8 @@ export const useAudio = (
       if (!shouldPlay(valueToWatch)) return;
     }
 
-    audio.current.play().catch(() => {
-      console.warn('Failed to play audio. Please make sure to interact with the page first.');
+    audio.current.play().catch((e) => {
+      console.warn('Failed to play audio. Please make sure to interact with the page first.', e);
     });
   }, [valueToWatch, shouldPlay]);
 };

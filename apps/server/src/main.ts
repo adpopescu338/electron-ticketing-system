@@ -2,6 +2,8 @@ import { getSystemSettings } from './libs/storage';
 import { app, BrowserWindow } from 'electron';
 import { startExpressApp } from './express/startExpressApp';
 import { QueueManagers } from './libs/Queue';
+import { getClientDir } from './express/router';
+import path from 'path';
 
 const { PORT = 3001 } = getSystemSettings();
 
@@ -12,13 +14,15 @@ function createWindow() {
       sandbox: false,
     },
     autoHideMenuBar: true, // This will auto hide the menu bar
-    icon: `${__dirname}/../client/build/q.png`,
+    icon: path.join(getClientDir(), 'public', 'q.png'),
   });
 
   mainWindow.maximize();
 
   // and load the app.
-  mainWindow.loadURL(`http://localhost:${process.env.NODE_ENV === 'development' ? PORT : 3000}`);
+  // if on dev, load react dev server, so we can see the changes live
+  // if on prod, load the build
+  mainWindow.loadURL(`http://localhost:${process.env.NODE_ENV === 'development' ? 3000 : PORT}/`);
 
   // Listen for new window creation
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
