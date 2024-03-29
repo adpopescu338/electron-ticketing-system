@@ -16,7 +16,6 @@
     "copy-electron": "cp -r ./node_modules/electron/ ./dist",
     "prepackage": "mkdir -p ./dist && yarn run copy-server && yarn run copy-client",
     "package": "yarn prepackage && npx electron-builder --win --ia32",
-    "postinstall": "node ./node_modules/electron/install.js",
     "start": "export NODE_ENV=development && cd apps/server && yarn start"
   },
   "workspaces": {
