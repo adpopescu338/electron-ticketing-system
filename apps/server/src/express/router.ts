@@ -11,8 +11,18 @@ import { QueueDisplaySettings } from '@repo/types';
 import { QueueManagers } from './../libs/Queue';
 import { systemSettingsValidationSchema, queueSettingsValidationSchema } from '@repo/validation';
 import storage from 'electron-json-storage';
+import path from 'path';
+import fs from 'fs';
 
 export const router = Router();
+
+export const getClientDir = () => {
+  if (process.env.NODE_ENV === 'development') {
+    return path.join(__dirname, '../../client/dist');
+  }
+
+  return __dirname;
+};
 
 router.get('/q', (req, res) => {
   const queuesSettings = getQueuesSettings();
@@ -23,7 +33,7 @@ router.get('/audios', (req, res) => {
   // there are some issues with the directory path when running the app in dev mode vs when packaged
   // so for now we will just hardcode the mp3 file names
   // they're not dynamic anyway
-  const files = ['1.mp3', '2.mp3', '3.mp3', '4.mp3', '5.mp3', '6.mp3', '7.mp3'];
+  const files = fs.readdirSync(path.join(getClientDir(), 'public', 'audio'));
 
   res.json(files);
 });

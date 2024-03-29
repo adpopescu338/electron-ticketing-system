@@ -5,7 +5,7 @@ import path from 'path';
 import http from 'http';
 import { Server } from 'socket.io';
 import { QueueNames } from '../libs/storage';
-import { router } from './router';
+import { router, getClientDir } from './router';
 import { findSocketQueueName } from '../libs/findSocketQueueName';
 
 const app = express();
@@ -55,7 +55,7 @@ io.on('connection', (socket) => {
 app.use(express.json());
 app.use('/api', router);
 
-export const clientBuildPath = path.join(process.cwd(), '../client', 'dist');
+const clientBuildPath = getClientDir();
 
 // set cache headers for files in audio folder
 app.use('/audio', (req, res) => {
