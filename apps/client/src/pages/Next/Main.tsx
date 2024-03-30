@@ -36,6 +36,8 @@ const DashboardWorker: React.FC<{ queueSettings: QueueDisplaySettings }> = ({ qu
   }, []);
 
   if (!socket) return <CircularProgress />;
+  if (!queueData) return <CircularProgress />;
+  if (!desk) return <CircularProgress />;
 
   return (
     <div>
@@ -46,7 +48,7 @@ const DashboardWorker: React.FC<{ queueSettings: QueueDisplaySettings }> = ({ qu
         currentNumber={queueData.currentItems[0]?.number}
       />
       <QDisplayer settings={queueSettings} queueData={queueData} currentDesk={desk} />
-      <SendMessage queueName={queueSettings.name} queueData={queueData} />
+      <SendMessage queueName={queueSettings.name} queueData={queueData} desk={desk} />
     </div>
   );
 };

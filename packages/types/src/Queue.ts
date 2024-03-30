@@ -10,6 +10,7 @@ export type QMessage = {
   text: string;
   createdAt: number;
   displayedAt: number | null;
+  desk: number;
 };
 
 export type Queue = {

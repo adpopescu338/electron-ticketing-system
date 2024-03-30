@@ -41,7 +41,7 @@ class QueueManagerCl {
     await setQueueState(this.queueName, this.queue.currentItems);
   }
 
-  public message(message: string): void {
+  public message(message: string, desk: number): void {
     const queue = this.queue;
 
     if (queue.message) {
@@ -53,6 +53,7 @@ class QueueManagerCl {
       text: message,
       createdAt: Date.now(),
       displayedAt: null,
+      desk,
     };
 
     // let clients know that a message has been sent
@@ -144,7 +145,7 @@ class QueueManagerCl {
           this.logger.debug(
             'handleBackground:: Most recent item display time not passed, waiting for it to pass'
           );
-          this.setTimeout(message);
+          this.setTimeout(mostRecentItem);
           return;
         }
       }

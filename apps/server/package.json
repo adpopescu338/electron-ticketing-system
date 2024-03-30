@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "tsup",
+    "build-electron-scripts": "tsup src/preload.ts --format cjs --minify --out-dir dist",
+    "build": "tsup && yarn build-electron-scripts",
     "start": "electron ./dist/main.js",
     "dev": "nodemon"
   },
@@ -20,7 +21,7 @@
       "src"
     ],
     "ext": "ts",
-    "exec": "export NODE_ENV=development yarn build && yarn start",
+    "exec": "export NODE_ENV=development && rm -rf ./dist && yarn build && yarn start",
     "ignore": [
       "dist/**"
     ]

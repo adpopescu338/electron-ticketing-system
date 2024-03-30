@@ -11,21 +11,17 @@
     "dev:client": "cd apps/client && yarn dev",
     "dev:server": "turbo run dev --filter={apps/server}",
     "dev": "concurrently \"yarn dev:client\" \"yarn dev:server\"",
-    "copy-server": "cp -r ./apps/server/dist/main.js ./dist",
+    "copy-server": "cp -r ./apps/server/dist/ ./dist",
     "copy-client": "cp -r ./apps/client/dist/ ./dist",
     "copy-electron": "cp -r ./node_modules/electron/ ./dist",
     "prepackage": "mkdir -p ./dist && yarn run copy-server && yarn run copy-client",
-    "package": "yarn prepackage && npx electron-builder --win --ia32",
+    "package": "yarn prepackage && npx electron-builder",
     "start": "export NODE_ENV=development && cd apps/server && yarn start"
   },
   "workspaces": {
     "packages": [
       "packages/*",
       "apps/*"
-    ],
-    "nohoist": [
-      "**/electron",
-      "**/electron/**"
     ]
   },
   "repository": "https://github.com/adpopescu338/electron-ticketing-system",
@@ -35,6 +31,7 @@
     "@types/express": "^4.17.21",
     "@types/lodash": "^4.14.202",
     "concurrently": "^8.2.2",
+    "electron": "29.1.0",
     "turbo": "^1.12.4",
     "typescript": "^5.3.3"
   },
@@ -50,21 +47,20 @@
     "appId": "com.alexandrupopescu.tick",
     "productName": "Tick",
     "directories": {
-      "output": "build"
+      "output": "./build"
     },
     "win": {
-      "icon": "dist/public/q.ico",
+      "icon": "./dist/q.ico",
       "target": "portable"
     },
     "mac": {
-      "icon": "dist/public/q.icns"
+      "icon": "./dist/q.icns"
     },
     "linux": {
-      "icon": "dist/public/q.png"
+      "icon": "./dist/q.png"
     },
     "files": [
-      "dist/**/*",
-      "!.env"
+      "./dist/**/*"
     ]
   }
 }

@@ -20,13 +20,13 @@ export const QDisplayer: React.FC<{
   return (
     <Container>
       <QueueContainer hide></QueueContainer>
+      <QueueDisplayer currentDesk={currentDesk} items={data.currentItems} message={data.message} />
       <QueueDisplayer
         currentDesk={currentDesk}
-        items={data.currentItems}
-        title="Current"
+        items={data.nextItems}
         message={data.message}
+        incoming
       />
-      <QueueDisplayer currentDesk={currentDesk} items={data.nextItems} title="Incoming" />
     </Container>
   );
 };
@@ -55,9 +55,9 @@ const QueueContainer = styled.div<{
   overflow-y: auto;
 `;
 
-const Row = styled.div<{ highlight: boolean }>`
+const Row = styled.div<{ highlight: boolean; center?: boolean }>`
   display: flex;
-  justify-content: space-between;
+  justify-content: ${({ center }) => (center ? 'center' : 'space-between')};
   padding: 10px;
   background-color: ${({ highlight }) => (highlight ? '#fff3cf' : 'transparent')};
   border-radius: 5px;
@@ -66,19 +66,28 @@ const Row = styled.div<{ highlight: boolean }>`
 
 const QueueDisplayer: React.FC<{
   items: FeUseDataReturnType['currentItems'] | FeUseDataReturnType['nextItems'];
-  title: string;
   message?: FeUseDataReturnType['message'];
   currentDesk?: number | null;
-}> = ({ items, title, message, currentDesk }) => {
-  if (message?.displayedAt) {
+  incoming?: boolean;
+}> = ({ items, incoming, message, currentDesk }) => {
+  if (!incoming && message?.displayedAt) {
     return <QueueContainer displayMessage>{message.text}</QueueContainer>;
   }
+
+  const title = incoming ? 'Incoming' : 'Current';
 
   return (
     <QueueContainer>
       <Typography variant="h4" textAlign="center">
         {title}
       </Typography>
+      {incoming && message && !message.displayedAt && (
+        <Row highlight={currentDesk === message.desk} center>
+          <Typography variant="h6" textAlign="center">
+            {message.text}
+          </Typography>
+        </Row>
+      )}
       {items.map((item, i) => {
         if (item === null) {
           return (

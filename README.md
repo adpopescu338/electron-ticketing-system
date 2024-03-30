@@ -7,4 +7,18 @@ The interface can be accessed from the App or from a browser in the same network
 It provides the ability to create different queues, and display them together or separately on one or more screens.
 There is a web interface meant to be accessed from computers within the network, from where the queues can be managed: Workers can call the next customer, or send a message.
 
-Build with `npx electron-builder --windows nsis:ia32`
+## Installation
+
+Clone the repository and run `yarn install` to install the dependencies.
+Then run `yarn dev` to start the development server.
+
+## Packaging
+
+Run `yarn build` to build the application.
+Then run `yarn package` to package the application for the current platform.
+
+Package with :
+`yarn package --win --ia32`
+`yarn package --win --x64`
+`yarn package --mac`
+`yarn package --linux`

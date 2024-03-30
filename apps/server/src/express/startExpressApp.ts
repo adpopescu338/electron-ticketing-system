@@ -7,6 +7,7 @@ import { Server } from 'socket.io';
 import { QueueNames } from '../libs/storage';
 import { router, getClientDir } from './router';
 import { findSocketQueueName } from '../libs/findSocketQueueName';
+import net from 'net';
 
 const app = express();
 const server = http.createServer(app);
@@ -36,10 +37,10 @@ io.on('connection', (socket) => {
     QueueManager.next(desk);
   });
 
-  socket.on('messageSent' satisfies EventNames, (message: string) => {
+  socket.on('messageSent' satisfies EventNames, (message: string, desk: number) => {
     const queueName = findSocketQueueName(socket);
     const QueueManager = QueueManagers.get(queueName);
-    QueueManager.message(message);
+    QueueManager.message(message, desk);
   });
 
   socket.on(
@@ -71,13 +72,55 @@ app.use((req, res) => {
   res.sendFile(path.join(clientBuildPath, 'index.html'));
 });
 
-export const startExpressApp = (port: number): Promise<void> => {
-  return new Promise<void>((resolve) => {
-    console.log('Starting express app');
+const isPortOpen = async (port: number): Promise<boolean> => {
+  return new Promise((resolve) => {
+    const s = net.createServer();
+    s.once('error', (err) => {
+      s.close();
+      if ('code' in err && err.code == 'EADDRINUSE') {
+        resolve(false);
+      } else {
+        resolve(false);
+      }
+    });
+    s.once('listening', () => {
+      resolve(true);
+      s.close();
+    });
+    s.listen(port);
+  });
+};
 
-    server.listen(port, () => {
-      console.log(`Express app listening on port ${port}!`);
-      resolve();
+const getNextOpenPort = async (startFrom: number) => {
+  let openPort: number;
+  while (startFrom < 65535 || !!openPort) {
+    if (await isPortOpen(startFrom)) {
+      return startFrom;
+    }
+    startFrom++;
+  }
+
+  throw new Error('No open port found');
+};
+
+/**
+ * Start express app on given port. If port is already in use, it will use the next available port.
+ * @param port
+ * @returns
+ */
+export const startExpressApp = async (port: number): Promise<number> => {
+  const nextOpenPort = await getNextOpenPort(port);
+
+  if (port !== nextOpenPort) {
+    console.warn(`Port ${port} is already in use. Using next available port ${nextOpenPort}`);
+  }
+
+  return new Promise<number>((resolve) => {
+    console.log('Starting express app on port', nextOpenPort);
+
+    server.listen(nextOpenPort, () => {
+      console.log(`Express app listening on port ${nextOpenPort}!`);
+      resolve(nextOpenPort);
     });
   });
 };

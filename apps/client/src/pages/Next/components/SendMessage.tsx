@@ -18,13 +18,29 @@ const Container = styled.div`
 export const SendMessage: React.FC<{
   queueName: string;
   queueData: FeUseDataReturnType;
-}> = ({ queueData, queueName }) => {
+  desk: number;
+}> = ({ queueData, queueName, desk }) => {
   const ref = React.useRef<HTMLTextAreaElement>(null);
   const socket = useSocket(queueName);
 
   const handleSend = () => {
+    if (!desk) {
+      sweetAlert('Please set a desk number', '', 'error');
+      return;
+    }
+    if (!socket) {
+      sweetAlert('Socket not connected', '', 'error');
+      return;
+    }
+
     const message = ref.current!.value;
-    socket!.emit('messageSent' satisfies EventNames, message);
+
+    if (!message) {
+      sweetAlert('Please enter a message', '', 'error');
+      return;
+    }
+
+    socket.emit('messageSent' satisfies EventNames, message, desk);
   };
 
   return (

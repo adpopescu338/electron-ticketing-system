@@ -10,6 +10,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import styled from 'styled-components';
 import swal from 'sweetalert';
 import axios from 'axios';
+import { AddressDisplayer } from 'components/AddressDisplayer';
 
 const QueueOptions = styled.div`
   display: flex;
@@ -95,6 +96,7 @@ export const Home: React.FC = () => {
 
   return (
     <Container>
+      <AddressDisplayer />
       <Typography variant="h4">Queue Settings</Typography>
       <Typography variant="body1">Here you can edit your queues and create new ones.</Typography>
       {queuesSettings.map((queue) => (
