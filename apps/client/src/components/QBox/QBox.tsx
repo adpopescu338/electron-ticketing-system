@@ -32,6 +32,7 @@ const TableHeader: React.FC<{
         <th ref={numberTextGteDeskText ? thRef : undefined} style={thStyle}>
           {settings.tableHeaderNumberText}
         </th>
+
         <th ref={numberTextGteDeskText ? undefined : thRef} style={thStyle}>
           {settings.tableHeaderDeskText}
         </th>
@@ -57,14 +58,14 @@ const TableBody: React.FC<{
         if (item === null) {
           return (
             <tr key={i}>
-              <TD borderColor={settings.borderColor}>-</TD>
+              {settings.isSequential && <TD borderColor={settings.borderColor}>-</TD>}
               <TD borderColor={settings.borderColor}>-</TD>
             </tr>
           );
         }
         return (
           <tr key={`${item.number}-${item.desk}-${item.createdAt}`}>
-            <TD borderColor={settings.borderColor}>{item.number}</TD>
+            {settings.isSequential && <TD borderColor={settings.borderColor}>{item.number}</TD>}
             <TD borderColor={settings.borderColor}>{item.desk}</TD>
           </tr>
         );
@@ -97,7 +98,7 @@ const QBox: React.FC<{
           displayTitle={settings.displayTitle}
           {...(settings.displayTitle && { h1Height: h1Ref?.current?.clientHeight })}
         >
-          <TableHeader settings={settings} />
+          {settings.isSequential && <TableHeader settings={settings} />}
           <TableBody settings={settings} data={data} />
         </Table>
       </div>

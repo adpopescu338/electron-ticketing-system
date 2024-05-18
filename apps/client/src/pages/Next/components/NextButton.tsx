@@ -1,5 +1,5 @@
 import React from 'react';
-import { EventNames, SystemSettings } from '@repo/types';
+import { EventNames, QueueDisplaySettings, SystemSettings } from '@repo/types';
 import Button from '@mui/material/Button';
 import styled from 'styled-components';
 import { useSocket } from 'hooks/useSocket';
@@ -33,11 +33,11 @@ const getNextNumber = (
 
 export const NextButton: React.FC<{
   desk: number;
-  queueName: string;
+  queueSettings: QueueDisplaySettings;
   currentNumber: number | null | undefined;
-}> = ({ desk, queueName }) => {
+}> = ({ desk, queueSettings }) => {
   const [disabled, setDisabled] = React.useState(false);
-  const socket = useSocket(queueName);
+  const socket = useSocket(queueSettings.name);
   const [systemSettings, loading] = useSystemSettings();
 
   const handleNext = () => {
@@ -50,6 +50,7 @@ export const NextButton: React.FC<{
   };
 
   const handleSpecificNumber = async () => {
+    if (!queueSettings.isSequential) return;
     const number = await swal('Enter number to call', {
       content: {
         element: 'input' as const,
@@ -106,14 +107,16 @@ export const NextButton: React.FC<{
     <Container>
       {socket && (
         <>
-          <Button
-            size="large"
-            variant="outlined"
-            onClick={handleSpecificNumber}
-            disabled={buttonsDisabled}
-          >
-            Call a specific number
-          </Button>
+          {queueSettings.isSequential && (
+            <Button
+              size="large"
+              variant="outlined"
+              onClick={handleSpecificNumber}
+              disabled={buttonsDisabled}
+            >
+              Call a specific number
+            </Button>
+          )}
           <Button
             size="large"
             variant="contained"

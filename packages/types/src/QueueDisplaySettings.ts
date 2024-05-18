@@ -11,4 +11,9 @@ export type QueueDisplaySettings = {
   tableHeaderDeskText: string;
   messageAudioFileName: string;
   numberAudioFileName: string;
+  /**
+   * If true, a number will be displayed on the screen.
+   * Else, just the desk will be displayed.
+   */
+  isSequential: boolean;
 };

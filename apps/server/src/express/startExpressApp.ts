@@ -61,7 +61,7 @@ const clientBuildPath = getClientDir();
 // set cache headers for files in audio folder
 app.use('/audio', (req, res) => {
   res.setHeader('Cache-Control', 'public, max-age=31557600');
-  res.sendFile(path.join(clientBuildPath, 'public', 'audio', req.url));
+  res.sendFile(path.join(clientBuildPath, 'audio', req.url));
 });
 
 // Serve static files from the React app

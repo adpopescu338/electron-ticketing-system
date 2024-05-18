@@ -20,12 +20,18 @@ export const QDisplayer: React.FC<{
   return (
     <Container>
       <QueueContainer hide></QueueContainer>
-      <QueueDisplayer currentDesk={currentDesk} items={data.currentItems} message={data.message} />
+      <QueueDisplayer
+        currentDesk={currentDesk}
+        items={data.currentItems}
+        message={data.message}
+        settings={settings}
+      />
       <QueueDisplayer
         currentDesk={currentDesk}
         items={data.nextItems}
         message={data.message}
         incoming
+        settings={settings}
       />
     </Container>
   );
@@ -69,7 +75,8 @@ const QueueDisplayer: React.FC<{
   message?: FeUseDataReturnType['message'];
   currentDesk?: number | null;
   incoming?: boolean;
-}> = ({ items, incoming, message, currentDesk }) => {
+  settings: QueueDisplaySettings;
+}> = ({ items, incoming, message, currentDesk, settings }) => {
   if (!incoming && message?.displayedAt) {
     return <QueueContainer displayMessage>{message.text}</QueueContainer>;
   }
@@ -92,7 +99,7 @@ const QueueDisplayer: React.FC<{
         if (item === null) {
           return (
             <Row highlight={false} key={`${i}`}>
-              <span>-</span>
+              {settings.isSequential && <span>-</span>}
               <span>-</span>
             </Row>
           );
@@ -101,8 +108,9 @@ const QueueDisplayer: React.FC<{
           <Row
             highlight={currentDesk === item.desk}
             key={`${item.number}-${item.desk}-${item.createdAt}`}
+            center
           >
-            <span>{item.number}</span>
+            {settings.isSequential && <span>{item.number}</span>}
             <span>{item.desk}</span>
           </Row>
         );

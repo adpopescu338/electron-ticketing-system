@@ -7,7 +7,15 @@ import { QueueDisplaySettings } from '@repo/types';
 import { queueSettingsValidationSchema } from '@repo/validation';
 import { useCtx } from 'hooks/useCtx';
 import { useParams } from 'react-router-dom';
-import { FormControl, IconButton, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import {
+  FormControl,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { Grid, Paper } from '@mui/material';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import styled from 'styled-components';
@@ -56,6 +64,7 @@ const DEFAULT_VALUES: QueueDisplaySettings = {
   tableHeaderDeskText: 'Desk',
   messageAudioFileName: '',
   numberAudioFileName: '',
+  isSequential: true,
 };
 
 const useSubmit = (queueName: string, onSubmit?: (values: QueueDisplaySettings) => void) => {
@@ -142,7 +151,7 @@ export const QueueSettings: React.FC<{
               }
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={6}>
             <FormControlLabel
               control={
                 <Switch
@@ -153,6 +162,26 @@ export const QueueSettings: React.FC<{
               }
               label="Display Queue Title"
             />
+            <br />
+            <Typography variant="caption">
+              The title will be displayed at the top of the queue.
+            </Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={formik.values.isSequential}
+                  onChange={formik.handleChange}
+                  name="isSequential"
+                />
+              }
+              label="Is Sequential?"
+            />
+            <br />
+            <Typography variant="caption">
+              If yes, a number is displayed for each desk, else only the desk is displayed.
+            </Typography>
           </Grid>
           <Grid item xs={6}>
             <ColorPicker label="Text Color" formik={formik} name="color" />
