@@ -36,6 +36,8 @@ const computeFontSize = (htmlElement: HTMLElement): number => {
   if (fineTunedFontSize === 1) {
     console.error('useMaxFontSize: fineTunedFontSize is 1');
     console.log('htmlElement', htmlElement);
+  } else {
+    htmlElement.style.fontSize = fineTunedFontSize + 'px';
   }
 
   return fineTunedFontSize;
