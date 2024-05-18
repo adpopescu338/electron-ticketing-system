@@ -12,6 +12,7 @@ class QueueManagerCl {
   logger: ReturnType<typeof createLogger>;
   timeout: NodeJS.Timeout;
   timeoutExpiresAt: number;
+  private lastEmittedUpdateAt: number;
 
   constructor(queueName: string) {
     this.queueName = queueName;
@@ -69,7 +70,6 @@ class QueueManagerCl {
       return;
     }
     delete this.queue.message;
-    this.emitUpdate();
   }
 
   public next(desk: number): void {
@@ -153,6 +153,7 @@ class QueueManagerCl {
       if (this.displayTimePassed(message)) {
         this.logger.debug('handleBackground:: Message display time passed');
         this.handleMessageEnd();
+        return this.handleBackground();
       } else {
         this.logger.debug('handleBackground:: Message display time not passed');
         // no need to do anything, it will resume in the next iteration
@@ -251,13 +252,15 @@ class QueueManagerCl {
   }
 
   public emitUpdate(specificSocket?: SocketType): void {
-    this.logger.debug(`emitUpdate, emitting update`);
+    this.logger.debug(`emitUpdate, emitting update. current item nr: ${this.queue.currentItems[0]?.number} at ${new Date().toISOString()}`);
     if (specificSocket) {
       specificSocket.emit('update' satisfies EventNames, this.queue);
+      this.lastEmittedUpdateAt = Date.now();
       return;
     }
 
     this.socket.to(this.queueName).emit('update' satisfies EventNames, this.queue);
+    this.lastEmittedUpdateAt = Date.now();
   }
 
   private emitItemAdded(nextItems: QItem[]): void {

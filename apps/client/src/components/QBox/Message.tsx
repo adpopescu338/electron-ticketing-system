@@ -26,7 +26,7 @@ export const Message: React.FC<{
 }> = ({ text, settings }) => {
   const [ref] = useMaxFontSize<HTMLHeadingElement>();
 
-  useAudio(settings.messageAudioFileName, text, Boolean);
+  useAudio(settings.messageAudioFileName, text);
 
   return (
     <Container settings={settings} ref={ref}>

@@ -56,6 +56,7 @@ const DEFAULT_VALUES: QueueDisplaySettings = {
   tableHeaderDeskText: 'Desk',
   messageAudioFileName: '',
   numberAudioFileName: '',
+  speakFormat: undefined,
 };
 
 const useSubmit = (queueName: string, onSubmit?: (values: QueueDisplaySettings) => void) => {
@@ -298,6 +299,22 @@ export const QueueSettings: React.FC<{
             >
               <PlayCircleOutlineIcon />
             </IconButton>
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              id="speakFormat"
+              name="speakFormat"
+              label="Speak Format"
+              value={formik.values.speakFormat || ''}
+              onChange={formik.handleChange}
+              error={formik.touched.speakFormat && Boolean(formik.errors.speakFormat)}
+              helperText={
+                formik.touched.speakFormat
+                  ? formik.errors.speakFormat
+                  : 'Use {number} and {desk} to replace with the actual values.'
+              }
+            />
           </Grid>
           <Grid item xs={12}>
             <Button color="primary" variant="contained" fullWidth type="submit">

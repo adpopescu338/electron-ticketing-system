@@ -30,16 +30,30 @@ router.get('/q', (req, res) => {
 });
 
 router.get('/audios', (req, res) => {
-  // there are some issues with the directory path when running the app in dev mode vs when packaged
-  // so for now we will just hardcode the mp3 file names
-  // they're not dynamic anyway
-  const files = fs.readdirSync(path.join(getClientDir(), 'public', 'audio'));
+  const isDev = process.env.NODE_ENV === 'development';
+  const paths = [getClientDir()]
+  if (isDev) {
+    paths.push("public")
+  }
+  paths.push("audio")
+  let audiosPaths = path.join(...paths);
+  if (isDev) {
+    audiosPaths = audiosPaths.replace("/dist", "")
+  }
 
-  res.json(files);
+  fs.readdir(audiosPaths, { encoding: "utf-8" }, (err, files) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ success: false, message: err.message });
+    }
+
+    res.json(files.filter((file) => file.endsWith('.mp3')))
+  });
 });
 
 router.post('/q/_new', async (req, res) => {
   const data: QueueDisplaySettings = req.body;
+  data.speakFormat = data.speakFormat?.toLowerCase()?.trim();
 
   try {
     await addQueueSettings(data);
@@ -62,6 +76,7 @@ router.post('/q/_new', async (req, res) => {
 
 router.post('/q/:queueName', async (req, res) => {
   const data: QueueDisplaySettings = req.body;
+  data.speakFormat = data.speakFormat?.toLowerCase()?.trim();
 
   try {
     await queueSettingsValidationSchema.validate(data);

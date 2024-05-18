@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  EventNames,
-  FeUseDataReturnType,
-  QItem,
-  Queue,
-  QueueDisplaySettings,
-} from '@repo/types';
+import { EventNames, FeUseDataReturnType, QItem, Queue, QueueDisplaySettings } from '@repo/types';
 import { useSocket } from './useSocket';
 
 export const useQueueData = (
@@ -31,7 +25,18 @@ export const useQueueData = (
     console.log(`Adding socket listener for ${newItemEvent}`);
 
     socket.on(newItemEvent, (q: Queue) => {
-      console.log(`Received data! for ${newItemEvent}`);
+      console.log(
+        `Received data for ${newItemEvent} at ${new Date().toISOString()}. new current number is ${
+          q.currentItems[0]?.number
+        }`
+      );
+      const isTheSame =
+        data.message?.text === q.message?.text &&
+        data.currentItems[0]?.number === q.currentItems[0]?.number;
+      if (isTheSame) {
+        console.log('Data is the same, returning');
+        return;
+      }
       setData({
         ...q,
         currentItems: q.currentItems.slice(0, maxItemsToDisplay),
@@ -42,7 +47,7 @@ export const useQueueData = (
 
     if (displayingOnDashboard) {
       socket.on(nextItemAddedEvent, (nextItems: Queue['nextItems']) => {
-        console.log(`Received data! for ${nextItemAddedEvent}`);
+        console.log(`Dashboard listener: Received data for ${nextItemAddedEvent}`);
         setData((prev) => ({
           ...prev,
           nextItems,
@@ -66,11 +71,23 @@ export const useQueueData = (
       itemsToDisplay.push(null);
     }
 
+    console.log(
+      'useQueueData::itemsToDisplay[0]?.number',
+      itemsToDisplay?.[0]?.number,
+      `at ${new Date().toISOString()}`
+    );
+
     return {
       ...data,
       currentItems: itemsToDisplay,
     };
   }
+
+  console.log(
+    'useQueueData::data.currentItems[0]?.number',
+    data.currentItems?.[0]?.number,
+    `at ${new Date().toISOString()}`
+  );
 
   return data;
 };

@@ -11,4 +11,5 @@ export type QueueDisplaySettings = {
   tableHeaderDeskText: string;
   messageAudioFileName: string;
   numberAudioFileName: string;
+  speakFormat?: string;
 };

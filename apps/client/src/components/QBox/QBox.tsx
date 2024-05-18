@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import type { FeUseDataReturnType, QueueDisplaySettings } from '@repo/types';
 import { useMaxFontSize } from '../../hooks/useMaxFontSize';
 import { Table, Wrapper, H1, THead, TD } from './StyledComponents';
@@ -78,10 +78,35 @@ const QBox: React.FC<{
   data: FeUseDataReturnType;
 }> = ({ settings, data }) => {
   const [h1Ref] = useMaxFontSize<HTMLHeadingElement>();
+  const currentItem = data.currentItems[0];
+  const lastSpoken = useRef(currentItem?.number);
+
+  const speak = () => {
+    if (!settings.speakFormat || !currentItem) return;
+    console.log({
+      'lastSpoken.current': lastSpoken.current,
+      'currentItem.number': currentItem.number,
+    });
+    if (lastSpoken.current === currentItem.number) return;
+
+    // replace {number} and {desk} with the actual values
+    const message = settings.speakFormat
+      .toLowerCase()
+      .replace('{number}', currentItem.number + '')
+      .replace('{desk}', currentItem.desk + '');
+
+    const utterance = new SpeechSynthesisUtterance(message);
+    utterance.lang = 'ro-RO';
+    console.log('Speaking:', message);
+    window.speechSynthesis.speak(utterance);
+
+    lastSpoken.current = currentItem.number;
+  };
 
   useAudio(
     settings.numberAudioFileName,
-    `${data.currentItems[0]?.number}-${data.currentItems[0]?.desk}`
+    `${data.currentItems[0]?.number}-${data.currentItems[0]?.desk}`,
+    speak
   );
 
   return (

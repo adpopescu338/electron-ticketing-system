@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 export const useAudio = (
   src: string,
   valueToWatch: unknown,
-  shouldPlay?: (valueToWatch: unknown) => boolean
+  cb?: () => void
 ) => {
   const audio = useRef(new Audio(`/audio/${src}`));
 
@@ -13,12 +13,14 @@ export const useAudio = (
   }, [src]);
 
   useEffect(() => {
-    if (typeof shouldPlay === 'function') {
-      if (!shouldPlay(valueToWatch)) return;
-    }
-
-    audio.current.play().catch((e) => {
-      console.warn('Failed to play audio. Please make sure to interact with the page first.', e);
-    });
-  }, [valueToWatch, shouldPlay]);
+    audio.current
+      .play()
+      .catch((e) => {
+        console.warn('Failed to play audio. Please make sure to interact with the page first.', e);
+      })
+      .finally(() => {
+        if (typeof cb === 'function') cb();
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [valueToWatch]);
 };
