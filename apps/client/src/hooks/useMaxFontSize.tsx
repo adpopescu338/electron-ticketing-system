@@ -11,7 +11,6 @@ const computeFontSize = (htmlElement: HTMLElement): number => {
   while (minSize <= maxSize) {
     const midSize = Math.floor((minSize + maxSize) / 2);
     htmlElement.style.fontSize = `${midSize}px`;
-
     if (htmlElement.scrollWidth > initialWidth || htmlElement.scrollHeight > initialHeight) {
       // If the size overflows, decrease maxSize
       maxSize = midSize - 1;

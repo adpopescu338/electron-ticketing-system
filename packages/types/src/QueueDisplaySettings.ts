@@ -16,4 +16,8 @@ export type QueueDisplaySettings = {
    * Else, just the desk will be displayed.
    */
   isSequential: boolean;
+  /**
+   * If false, the desk won't be displayed, because it's assumed that there's only one server (counter).
+   */
+  isMultiServer: boolean;
 };
