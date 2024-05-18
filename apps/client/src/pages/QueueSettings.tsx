@@ -65,6 +65,7 @@ const DEFAULT_VALUES: QueueDisplaySettings = {
   messageAudioFileName: '',
   numberAudioFileName: '',
   isSequential: true,
+  isMultiServer: true,
 };
 
 const useSubmit = (queueName: string, onSubmit?: (values: QueueDisplaySettings) => void) => {
@@ -129,6 +130,7 @@ export const QueueSettings: React.FC<{
       formik.setFieldValue('messageAudioFileName', res.data[0]);
       formik.setFieldValue('numberAudioFileName', res.data[0]);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -174,6 +176,7 @@ export const QueueSettings: React.FC<{
                   checked={formik.values.isSequential}
                   onChange={formik.handleChange}
                   name="isSequential"
+                  disabled={!formik.values.isMultiServer}
                 />
               }
               label="Is Sequential?"
@@ -181,6 +184,28 @@ export const QueueSettings: React.FC<{
             <br />
             <Typography variant="caption">
               If yes, a number is displayed for each desk, else only the desk is displayed.
+              {!formik.values.isMultiServer && ' This must be true when there is a single counter.'}
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={formik.values.isMultiServer}
+                  onChange={(_, checked) => {
+                    formik.setFieldValue('isMultiServer', checked);
+                    if (!checked) {
+                      formik.setFieldValue('isSequential', true);
+                    }
+                  }}
+                  name="isMultiServer"
+                />
+              }
+              label="Are there multiple counters for this queue?"
+            />
+            <br />
+            <Typography variant="caption">
+              If not, no counter number will be displayed, because there's only one counter.
             </Typography>
           </Grid>
           <Grid item xs={6}>

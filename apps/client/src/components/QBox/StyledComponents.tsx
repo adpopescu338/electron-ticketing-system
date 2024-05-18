@@ -26,6 +26,7 @@ export const H1 = styled.h1`
   text-align: center;
   padding: 0;
   margin: 0;
+  align-content: center;
 `;
 
 export const TD = styled.td<{

@@ -18,4 +18,5 @@ export const queueSettingsValidationSchema = Yup.object<QueueDisplaySettings>({
   messageAudioFileName: Yup.string().required('Message Audio File Name is required'),
   numberAudioFileName: Yup.string().required('Number Audio File Name is required'),
   isSequential: Yup.boolean().required('Display Number is required'),
+  isMultiServer: Yup.boolean().required('Multiple Server is required'),
 });
