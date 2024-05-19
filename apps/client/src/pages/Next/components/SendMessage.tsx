@@ -18,7 +18,7 @@ const Container = styled.div`
 export const SendMessage: React.FC<{
   queueName: string;
   queueData: FeUseDataReturnType;
-  desk: number;
+  desk: string;
 }> = ({ queueData, queueName, desk }) => {
   const ref = React.useRef<HTMLTextAreaElement>(null);
   const socket = useSocket(queueName);
