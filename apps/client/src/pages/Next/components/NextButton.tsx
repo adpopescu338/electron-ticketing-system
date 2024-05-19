@@ -32,7 +32,7 @@ const getNextNumber = (
 };
 
 export const NextButton: React.FC<{
-  desk: number;
+  desk: string;
   queueSettings: QueueDisplaySettings;
   currentNumber: number | null | undefined;
 }> = ({ desk, queueSettings }) => {

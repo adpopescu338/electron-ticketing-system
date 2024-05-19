@@ -13,8 +13,8 @@ const Container = styled.div`
 `;
 
 export const Desk: React.FC<{
-  desk: number | null;
-  setDesk: React.Dispatch<React.SetStateAction<number | null>>;
+  desk: string | null;
+  setDesk: React.Dispatch<React.SetStateAction<string | null>>;
 }> = ({ desk, setDesk }) => {
   return (
     <Container>

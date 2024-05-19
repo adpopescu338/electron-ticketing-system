@@ -13,7 +13,7 @@ const Container = styled.div`
 export const QDisplayer: React.FC<{
   settings: QueueDisplaySettings;
   queueData: FeUseDataReturnType;
-  currentDesk: number | null;
+  currentDesk: string | null;
 }> = ({ settings, currentDesk }) => {
   const data = useQueueData(settings.maxBoxesToDisplay, settings.name, true);
 
@@ -73,7 +73,7 @@ const Row = styled.div<{ highlight: boolean; center?: boolean }>`
 const QueueDisplayer: React.FC<{
   items: FeUseDataReturnType['currentItems'] | FeUseDataReturnType['nextItems'];
   message?: FeUseDataReturnType['message'];
-  currentDesk?: number | null;
+  currentDesk?: string | null;
   incoming?: boolean;
   settings: QueueDisplaySettings;
 }> = ({ items, incoming, message, currentDesk, settings }) => {

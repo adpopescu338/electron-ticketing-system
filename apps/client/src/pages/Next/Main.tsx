@@ -22,14 +22,14 @@ export const Next: React.FC = () => {
 
 const DashboardWorker: React.FC<{ queueSettings: QueueDisplaySettings }> = ({ queueSettings }) => {
   const socket = useSocket(queueSettings.name);
-  const [desk, setDesk] = React.useState<number | null>(null);
+  const [desk, setDesk] = React.useState<string | null>(null);
   const queueData = useQueueData(queueSettings.maxBoxesToDisplay, queueSettings.name, true);
 
   React.useEffect(() => {
     const localStorageDesk = localStorage.getItem('desk');
 
     if (localStorageDesk) {
-      setDesk(Number(localStorageDesk));
+      setDesk(localStorageDesk);
       return;
     }
     updateDesk(setDesk);
