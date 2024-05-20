@@ -7,7 +7,7 @@ import swal from 'sweetalert';
 import { isSwalNumberValid } from 'lib/isSwalNumberValid';
 import { useSystemSettings } from 'hooks/useSystemSettings';
 
-const WAIT_AFTER_CALL = 5 * 1000;
+const WAIT_AFTER_CALL = 2 * 1000;
 
 const Container = styled.div`
   padding-bottom: 20px;
@@ -50,7 +50,7 @@ export const NextButton: React.FC<{
   };
 
   const handleSpecificNumber = async () => {
-    if (!queueSettings.isSequential) return;
+    if (!queueSettings.displayNumber) return;
     const number = await swal('Enter number to call', {
       content: {
         element: 'input' as const,
@@ -107,7 +107,7 @@ export const NextButton: React.FC<{
     <Container>
       {socket && (
         <>
-          {queueSettings.isSequential && (
+          {queueSettings.displayNumber && (
             <Button
               size="large"
               variant="outlined"

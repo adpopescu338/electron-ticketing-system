@@ -58,15 +58,15 @@ const TableBody: React.FC<{
         if (item === null) {
           return (
             <tr key={i}>
-              {settings.isSequential && <TD borderColor={settings.borderColor}>-</TD>}
-              {settings.isMultiServer && <TD borderColor={settings.borderColor}>-</TD>}
+              {settings.displayNumber && <TD borderColor={settings.borderColor}>-</TD>}
+              {settings.displayServer && <TD borderColor={settings.borderColor}>-</TD>}
             </tr>
           );
         }
         return (
           <tr key={`${item.number}-${item.desk}-${item.createdAt}`}>
-            {settings.isSequential && <TD borderColor={settings.borderColor}>{item.number}</TD>}
-            {settings.isMultiServer && <TD borderColor={settings.borderColor}>{item.desk}</TD>}
+            {settings.displayNumber && <TD borderColor={settings.borderColor}>{item.number}</TD>}
+            {settings.displayServer && <TD borderColor={settings.borderColor}>{item.desk}</TD>}
           </tr>
         );
       })}
@@ -85,9 +85,9 @@ const QBox: React.FC<{
     `${data.currentItems[0]?.number}-${data.currentItems[0]?.desk}`
   );
 
-  const shouldDisplayHeader = !settings.isMultiServer
+  const shouldDisplayHeader = !settings.displayServer
     ? false
-    : !settings.isSequential
+    : !settings.displayNumber
     ? false
     : true;
 
