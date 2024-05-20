@@ -64,8 +64,8 @@ const DEFAULT_VALUES: QueueDisplaySettings = {
   tableHeaderDeskText: 'Desk',
   messageAudioFileName: '',
   numberAudioFileName: '',
-  isSequential: true,
-  isMultiServer: true,
+  displayNumber: true,
+  displayServer: true,
 };
 
 const useSubmit = (queueName: string, onSubmit?: (values: QueueDisplaySettings) => void) => {
@@ -173,39 +173,44 @@ export const QueueSettings: React.FC<{
             <FormControlLabel
               control={
                 <Switch
-                  checked={formik.values.isSequential}
-                  onChange={formik.handleChange}
-                  name="isSequential"
-                  disabled={!formik.values.isMultiServer}
+                  checked={formik.values.displayNumber}
+                  onChange={(_, checked) => {
+                    formik.setFieldValue('displayNumber', checked);
+                    if (!checked) {
+                      formik.setFieldValue('displayServer', true);
+                    }
+                  }}
+                  name="displayNumber"
                 />
               }
-              label="Is Sequential?"
+              label="Display Number"
             />
             <br />
             <Typography variant="caption">
-              If yes, a number is displayed for each desk, else only the desk is displayed.
-              {!formik.values.isMultiServer && ' This must be true when there is a single counter.'}
+              If yes, a number is displayed for each desk. If you don't display the server, the
+              number will be displayed anyway.
             </Typography>
           </Grid>
           <Grid item xs={12}>
             <FormControlLabel
               control={
                 <Switch
-                  checked={formik.values.isMultiServer}
+                  checked={formik.values.displayServer}
                   onChange={(_, checked) => {
-                    formik.setFieldValue('isMultiServer', checked);
+                    formik.setFieldValue('displayServer', checked);
                     if (!checked) {
-                      formik.setFieldValue('isSequential', true);
+                      formik.setFieldValue('displayNumber', true);
                     }
                   }}
-                  name="isMultiServer"
+                  name="displayServer"
                 />
               }
-              label="Are there multiple counters for this queue?"
+              label="Display Server"
             />
             <br />
             <Typography variant="caption">
-              If not, no counter number will be displayed, because there's only one counter.
+              If yes, the desk will be displayed. If you do not display the number, the desk will be
+              displayed anyway.
             </Typography>
           </Grid>
           <Grid item xs={6}>

@@ -17,6 +17,6 @@ export const queueSettingsValidationSchema = Yup.object<QueueDisplaySettings>({
   tableHeaderDeskText: Yup.string().required('Table Header Desk Text is required'),
   messageAudioFileName: Yup.string().required('Message Audio File Name is required'),
   numberAudioFileName: Yup.string().required('Number Audio File Name is required'),
-  isSequential: Yup.boolean().required('Display Number is required'),
-  isMultiServer: Yup.boolean().required('Multiple Server is required'),
+  displayNumber: Yup.boolean().required('Display Number is required'),
+  displayServer: Yup.boolean().required('Display Server is required'),
 });

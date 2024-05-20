@@ -51,7 +51,7 @@ export const NextButton: React.FC<{
   };
 
   const handleSpecificNumber = async () => {
-    if (!queueSettings.isSequential) return;
+    if (!queueSettings.displayNumber) return;
     const number = await swal('Enter number to call', {
       content: {
         element: 'input' as const,
@@ -106,7 +106,7 @@ export const NextButton: React.FC<{
     <Container>
       {socket && (
         <>
-          {queueSettings.isSequential && (
+          {queueSettings.displayNumber && (
             <Button
               size="large"
               variant="outlined"

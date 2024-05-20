@@ -82,7 +82,7 @@ const QueueDisplayer: React.FC<{
   }
 
   const title = incoming ? 'Incoming' : 'Current';
-  const centerRowContent = settings.isMultiServer ? false : !settings.isSequential ? false : true;
+  const centerRowContent = settings.displayServer ? false : !settings.displayNumber ? false : true;
 
   return (
     <QueueContainer>
@@ -100,8 +100,8 @@ const QueueDisplayer: React.FC<{
         if (item === null) {
           return (
             <Row highlight={false} key={`${i}`} center={centerRowContent}>
-              {settings.isSequential && <span>-</span>}
-              {settings.isMultiServer && <span>-</span>}
+              {settings.displayNumber && <span>-</span>}
+              {settings.displayServer && <span>-</span>}
             </Row>
           );
         }
@@ -111,8 +111,8 @@ const QueueDisplayer: React.FC<{
             key={`${item.number}-${item.desk}-${item.createdAt}`}
             center={centerRowContent}
           >
-            {settings.isSequential && <span>{item.number}</span>}
-            {settings.isMultiServer && <span>{item.desk}</span>}
+            {settings.displayNumber && <span>{item.number}</span>}
+            {settings.displayServer && <span>{item.desk}</span>}
           </Row>
         );
       })}
