@@ -12,6 +12,7 @@ const WAIT_AFTER_CALL = 2 * 1000;
 const Container = styled.div`
   padding-bottom: 20px;
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   gap: 10px;
 `;

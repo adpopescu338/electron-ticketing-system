@@ -3,6 +3,7 @@ import { Button, Typography } from '@mui/material';
 import { DisplaySettings } from './DisplaySettings';
 import TvIcon from '@mui/icons-material/Tv';
 import React from 'react';
+import { QueueDisplaySettings } from '@repo/types';
 
 export const Components: React.FC<{
   step: number;
@@ -12,9 +13,7 @@ export const Components: React.FC<{
   decreaseStep: () => void;
 }> = ({ step, increaseStep, selectedQueues, setSelectedQueues, decreaseStep }) => {
   const [settingsStep, setSettingsStep] = React.useState(0);
-  const [updatedSettings, setUpdatedSettings] = React.useState({} as any);
-
-  console.log({ settingsStep });
+  const [updatedSettings, setUpdatedSettings] = React.useState<QueueDisplaySettings[]>([]);
 
   if (step === 0) {
     return (
