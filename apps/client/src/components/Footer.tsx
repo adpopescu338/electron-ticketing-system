@@ -4,7 +4,7 @@ import swal from 'sweetalert';
 import HelpIcon from '@mui/icons-material/Help';
 
 const Container = styled.div`
-  position: absolute;
+
   bottom: 0;
   left: 0;
   padding: 10px;

@@ -29,6 +29,7 @@ const FormContainer = styled(Paper)({
   padding: '20px',
   maxWidth: '800px',
   marginTop: '20px',
+  paddingBottom: '70px',
 });
 
 const ColorPicker: React.FC<{
@@ -153,7 +154,7 @@ export const QueueSettings: React.FC<{
               }
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
             <FormControlLabel
               control={
                 <Switch
@@ -169,7 +170,7 @@ export const QueueSettings: React.FC<{
               The title will be displayed at the top of the queue.
             </Typography>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
             <FormControlLabel
               control={
                 <Switch
@@ -213,13 +214,13 @@ export const QueueSettings: React.FC<{
               displayed anyway.
             </Typography>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
             <ColorPicker label="Text Color" formik={formik} name="color" />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
             <ColorPicker label="Background color" formik={formik} name="backgroundColor" />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
             <ColorPicker
               name="borderColor"
               label="Border Color"
@@ -228,7 +229,7 @@ export const QueueSettings: React.FC<{
             />
           </Grid>
 
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
             <ColorPicker
               name="messageColor"
               formik={formik}
@@ -236,7 +237,7 @@ export const QueueSettings: React.FC<{
               helperText="The color of the message text."
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
             <TextField
               fullWidth
               name="maxBoxesToDisplay"
@@ -253,7 +254,7 @@ export const QueueSettings: React.FC<{
             />
           </Grid>
 
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
             <ColorPicker
               name="messageBackgroundColor"
               label="Message Background Color"
@@ -261,7 +262,7 @@ export const QueueSettings: React.FC<{
               helperText="The background color of the message area."
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
             <TextField
               fullWidth
               id="tableHeaderNumberText"
@@ -279,7 +280,7 @@ export const QueueSettings: React.FC<{
               }
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
             <TextField
               fullWidth
               id="tableHeaderDeskText"
@@ -297,7 +298,7 @@ export const QueueSettings: React.FC<{
               }
             />
           </Grid>
-          <Grid item xs={5}>
+          <Grid item xs={10} md={5}>
             <FormControl fullWidth>
               <InputLabel id="messageAudioFileName-label">Message Audio File Name</InputLabel>
               <Select
@@ -316,7 +317,7 @@ export const QueueSettings: React.FC<{
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={1}>
+          <Grid item xs={2} md={1}>
             <IconButton
               color="primary"
               disabled={!formik.values.messageAudioFileName}
@@ -328,7 +329,7 @@ export const QueueSettings: React.FC<{
             </IconButton>
           </Grid>
 
-          <Grid item xs={5}>
+          <Grid item xs={10} md={5}>
             <FormControl fullWidth>
               <InputLabel id="numberAudioFileName-label">Number Audio File Name</InputLabel>
               <Select
@@ -347,7 +348,7 @@ export const QueueSettings: React.FC<{
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={1}>
+          <Grid item xs={2} md={1}>
             <IconButton
               color="primary"
               disabled={!formik.values.numberAudioFileName}

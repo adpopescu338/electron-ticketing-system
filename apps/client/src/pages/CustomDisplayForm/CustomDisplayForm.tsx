@@ -4,7 +4,7 @@ import { BackButton, Components } from './components';
 
 const Wrapper = styled.div`
   width: 60%;
-  min-width: 500px;
+  min-width: 250px;
   max-width: 850px;
   min-height: 250px;
   margin: 0 auto;

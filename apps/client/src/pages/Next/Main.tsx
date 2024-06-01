@@ -40,7 +40,14 @@ const DashboardWorker: React.FC<{ queueSettings: QueueDisplaySettings }> = ({ qu
   if (!desk) return <CircularProgress />;
 
   return (
-    <div>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '20px',
+        paddingBottom: '50px',
+      }}
+    >
       <Desk desk={desk} setDesk={setDesk} />
       <NextButton
         desk={desk}

@@ -6,8 +6,9 @@ import { Typography } from '@mui/material';
 const Container = styled.div`
   display: flex;
   gap: 1rem;
-  justify-content: space-between;
+  justify-content: space-evenly;
   padding: 10px;
+  flex-wrap: wrap;
 `;
 
 export const QDisplayer: React.FC<{
@@ -19,7 +20,6 @@ export const QDisplayer: React.FC<{
 
   return (
     <Container>
-      <QueueContainer hide></QueueContainer>
       <QueueDisplayer
         currentDesk={currentDesk}
         items={data.currentItems}
@@ -70,6 +70,14 @@ const Row = styled.div<{ highlight: boolean; center?: boolean }>`
   border: 1px solid #000;
 `;
 
+const shouldCenterRowContent = (settings: QueueDisplaySettings) => {
+  if (settings.displayServer && !settings.displayNumber) return true;
+
+  if (!settings.displayServer && settings.displayNumber) return true;
+
+  return false;
+};
+
 const QueueDisplayer: React.FC<{
   items: FeUseDataReturnType['currentItems'] | FeUseDataReturnType['nextItems'];
   message?: FeUseDataReturnType['message'];
@@ -82,7 +90,7 @@ const QueueDisplayer: React.FC<{
   }
 
   const title = incoming ? 'Incoming' : 'Current';
-  const centerRowContent = settings.displayServer ? false : !settings.displayNumber ? false : true;
+  const centerRowContent = shouldCenterRowContent(settings);
 
   return (
     <QueueContainer>
