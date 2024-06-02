@@ -13,8 +13,8 @@ const Container = styled.div`
 const onClick = () => {
   swal(
     'About',
-    'Tick is a queue management system built by Alexandru Popescu as a sign of appreciation for the wonderful time spent at the Romanian Consulate in London.\n' +
-      'For any questions or suggestions, please contact me at ad.popescu338@yahoo.com'
+    'Tick is a queue management system built by Alexandru Popescu as the artifact for my final year Computing project at Arden University.\n' +
+      'For any questions or suggestions, please contact me at stu98198@ardenuniversity.ac.uk'
   );
 };
 
