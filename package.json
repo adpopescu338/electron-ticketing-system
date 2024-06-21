@@ -14,8 +14,9 @@
     "copy-server": "cp -r ./apps/server/dist/ ./dist",
     "copy-client": "cp -r ./apps/client/dist/ ./dist",
     "copy-electron": "cp -r ./node_modules/electron/ ./dist",
-    "prepackage": "mkdir -p ./dist && yarn run copy-server && yarn run copy-client",
-    "package": "yarn prepackage && npx electron-builder",
+    "build-icons": "yarn electron-icon-builder --input=./apps/client/public/q.png --output=./build --flatten",
+    "prepackage": "yarn build && mkdir -p ./dist && yarn run copy-server && yarn run copy-client && yarn build-icons",
+    "package": "yarn prepackage && electron-builder --mac --linux --win",
     "start": "export NODE_ENV=development && cd apps/server && yarn start"
   },
   "workspaces": {
@@ -32,6 +33,8 @@
     "@types/lodash": "^4.14.202",
     "concurrently": "^8.2.2",
     "electron": "29.1.0",
+    "electron-builder": "^24.13.3",
+    "electron-icon-builder": "^2.0.1",
     "turbo": "^1.12.4",
     "typescript": "^5.3.3"
   },
@@ -50,18 +53,79 @@
       "output": "./build"
     },
     "win": {
-      "icon": "./dist/q.ico",
-      "target": "portable",
-      "arch": [
-        "x64",
-        "ia32"
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        },
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
       ]
     },
     "mac": {
-      "icon": "./dist/q.icns"
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ]
     },
     "linux": {
-      "icon": "./dist/q.png"
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "rpm",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "tar.gz",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ]
     },
     "files": [
       "./dist/**/*"
