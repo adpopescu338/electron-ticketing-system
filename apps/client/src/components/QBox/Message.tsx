@@ -1,7 +1,6 @@
 import styled from 'styled-components';
 import { QueueDisplaySettings } from '@repo/types';
 import { useMaxFontSize } from '../../hooks/useMaxFontSize';
-import { useAudio } from '../../hooks/useAudio';
 
 const Container = styled.div<{
   settings: QueueDisplaySettings;
@@ -25,8 +24,6 @@ export const Message: React.FC<{
   displayingOnDashboard?: boolean;
 }> = ({ text, settings }) => {
   const [ref] = useMaxFontSize<HTMLHeadingElement>();
-
-  useAudio(settings.messageAudioFileName, text, Boolean);
 
   return (
     <Container settings={settings} ref={ref}>

@@ -4,6 +4,7 @@ export type QItem = {
   createdAt: number;
   displayedAt: number | null;
   exemptFromCount?: boolean;
+  id: string;
 };
 
 export type QMessage = {
@@ -11,6 +12,7 @@ export type QMessage = {
   createdAt: number;
   displayedAt: number | null;
   desk: string;
+  id: string;
 };
 
 export type Queue = {

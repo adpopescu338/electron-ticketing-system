@@ -24,20 +24,16 @@ io.on('connection', (socket) => {
     }
 
     socket.join(queueName);
-
-    const QueueManager = QueueManagers.get(queueName);
-
-    QueueManager.emitUpdate(socket);
   });
 
-  socket.on('sendNextReq' satisfies EventNames, (desk: number) => {
+  socket.on('sendNextReq' satisfies EventNames, (desk: string) => {
     const queueName = findSocketQueueName(socket);
     const QueueManager = QueueManagers.get(queueName);
 
     QueueManager.next(desk);
   });
 
-  socket.on('messageSent' satisfies EventNames, (message: string, desk: number) => {
+  socket.on('messageSent' satisfies EventNames, (message: string, desk: string) => {
     const queueName = findSocketQueueName(socket);
     const QueueManager = QueueManagers.get(queueName);
     QueueManager.message(message, desk);
@@ -45,7 +41,7 @@ io.on('connection', (socket) => {
 
   socket.on(
     'callSpecificNumber' satisfies EventNames,
-    (desk: number, numberToCall: number, resetCountFromThis: boolean) => {
+    (desk: string, numberToCall: number, resetCountFromThis: boolean) => {
       const queueName = findSocketQueueName(socket);
       const QueueManager = QueueManagers.get(queueName);
       QueueManager.callSpecificNumber(desk, numberToCall, resetCountFromThis);

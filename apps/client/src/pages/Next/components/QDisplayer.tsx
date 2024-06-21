@@ -16,7 +16,7 @@ export const QDisplayer: React.FC<{
   queueData: FeUseDataReturnType;
   currentDesk: string | null;
 }> = ({ settings, currentDesk }) => {
-  const data = useQueueData(settings.maxBoxesToDisplay, settings.name, true);
+  const data = useQueueData(settings, settings.name, true);
 
   return (
     <Container>
@@ -68,6 +68,7 @@ const Row = styled.div<{ highlight: boolean; center?: boolean }>`
   background-color: ${({ highlight }) => (highlight ? '#fff3cf' : 'transparent')};
   border-radius: 5px;
   border: 1px solid #000;
+  word-break: break-all;
 `;
 
 const shouldCenterRowContent = (settings: QueueDisplaySettings) => {
@@ -85,12 +86,22 @@ const QueueDisplayer: React.FC<{
   incoming?: boolean;
   settings: QueueDisplaySettings;
 }> = ({ items, incoming, message, currentDesk, settings }) => {
-  if (!incoming && message?.displayedAt) {
-    return <QueueContainer displayMessage>{message.text}</QueueContainer>;
-  }
-
-  const title = incoming ? 'Incoming' : 'Current';
   const centerRowContent = shouldCenterRowContent(settings);
+  const title = incoming ? 'Incoming' : 'Current';
+
+  if (!incoming && message?.displayedAt) {
+    return (
+      <QueueContainer>
+        <Typography variant="h4" textAlign="center">
+          {title}
+        </Typography>
+        <Typography textAlign="center">Message sent by {message.desk}</Typography>
+        <Row highlight={currentDesk === message.desk} center>
+          {message.text}
+        </Row>
+      </QueueContainer>
+    );
+  }
 
   return (
     <QueueContainer>
@@ -98,9 +109,12 @@ const QueueDisplayer: React.FC<{
         {title}
       </Typography>
       {incoming && message && !message.displayedAt && (
-        <Row highlight={currentDesk === message.desk} center>
+        <Row highlight={currentDesk === message.desk}>
           <Typography variant="h6" textAlign="center">
             {message.text}
+          </Typography>
+          <Typography variant="h6" textAlign="center">
+            {message.desk}
           </Typography>
         </Row>
       )}

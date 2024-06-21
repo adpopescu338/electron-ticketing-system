@@ -5,7 +5,6 @@ import { Table, Wrapper, H1, THead, TD } from './StyledComponents';
 import autoAnimate from '@formkit/auto-animate';
 import { Message } from './Message';
 import { useQueueData } from '../../hooks/useQueueData';
-import { useAudio } from '../../hooks/useAudio';
 
 /**
  * We want to make the th font size as big as possible, but we don't want it to be as big as to exceed the width of the parent.
@@ -80,11 +79,6 @@ const QBox: React.FC<{
 }> = ({ settings, data }) => {
   const [h1Ref] = useMaxFontSize<HTMLHeadingElement>();
 
-  useAudio(
-    settings.numberAudioFileName,
-    `${data.currentItems[0]?.number}-${data.currentItems[0]?.desk}`
-  );
-
   const shouldDisplayHeader = !settings.displayServer
     ? false
     : !settings.displayNumber
@@ -111,7 +105,7 @@ const QBox: React.FC<{
 export const QBoxContainer: React.FC<{
   settings: QueueDisplaySettings;
 }> = ({ settings }) => {
-  const data = useQueueData(settings.maxBoxesToDisplay, settings.name, false);
+  const data = useQueueData(settings, settings.name, false);
 
   if (data.message?.displayedAt) {
     return <Message text={data.message.text} settings={settings} displayingOnDashboard={false} />;

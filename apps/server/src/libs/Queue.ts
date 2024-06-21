@@ -3,6 +3,7 @@ import { getSystemSettings, setQueueState, QueueNames, getQueueState } from './s
 import { isNil } from 'lodash';
 import { Server as Socket } from 'socket.io';
 import { Socket as SocketType } from 'socket.io';
+import { v4 as uuidv4 } from 'uuid';
 
 class QueueManagerCl {
   queueName: string;
@@ -41,7 +42,7 @@ class QueueManagerCl {
     await setQueueState(this.queueName, this.queue.currentItems);
   }
 
-  public message(message: string, desk: number): void {
+  public message(message: string, desk: string): void {
     const queue = this.queue;
 
     if (queue.message) {
@@ -54,6 +55,7 @@ class QueueManagerCl {
       createdAt: Date.now(),
       displayedAt: null,
       desk,
+      id: uuidv4(),
     };
 
     // let clients know that a message has been sent
@@ -72,7 +74,7 @@ class QueueManagerCl {
     this.emitUpdate();
   }
 
-  public next(desk: number): void {
+  public next(desk: string): void {
     const { nextItems, currentItems } = this.queue;
 
     const followingItem =
@@ -85,6 +87,7 @@ class QueueManagerCl {
       createdAt: Date.now(),
       displayedAt: null,
       exemptFromCount: false,
+      id: uuidv4(),
     };
 
     this.logger.debug(`next:: newItem, nr ${newItem.number}, desk: ${newItem.desk}`);
@@ -102,7 +105,7 @@ class QueueManagerCl {
     });
   }
 
-  public callSpecificNumber(desk: number, numberToCall: number, resetCountFromThis: boolean): void {
+  public callSpecificNumber(desk: string, numberToCall: number, resetCountFromThis: boolean): void {
     const { nextItems } = this.queue;
 
     const newItem: QItem = {
@@ -111,6 +114,7 @@ class QueueManagerCl {
       createdAt: Date.now(),
       displayedAt: null,
       exemptFromCount: resetCountFromThis,
+      id: uuidv4(),
     };
 
     this.logger.debug(`callSpecificNumber:: newItem, nr ${newItem.number}, desk: ${newItem.desk}`);

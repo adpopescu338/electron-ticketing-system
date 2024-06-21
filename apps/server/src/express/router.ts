@@ -88,6 +88,18 @@ router.post('/q/:queueName', async (req, res) => {
   res.json({ success: true });
 });
 
+router.get('/q/:queueName', (req, res) => {
+  const { queueName } = req.params;
+
+  const queue = QueueManagers.get(queueName);
+  if (!queue) {
+    res.status(404).json({ success: false, message: 'Queue not found' });
+    return;
+  }
+
+  res.json(queue.queue);
+});
+
 router.delete('/q/:queueName', async (req, res) => {
   const { queueName } = req.params;
 
