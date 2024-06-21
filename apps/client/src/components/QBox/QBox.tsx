@@ -58,15 +58,15 @@ const TableBody: React.FC<{
         if (item === null) {
           return (
             <tr key={i}>
-              {settings.isSequential && <TD borderColor={settings.borderColor}>-</TD>}
-              <TD borderColor={settings.borderColor}>-</TD>
+              {settings.displayNumber && <TD borderColor={settings.borderColor}>-</TD>}
+              {settings.displayServer && <TD borderColor={settings.borderColor}>-</TD>}
             </tr>
           );
         }
         return (
           <tr key={`${item.number}-${item.desk}-${item.createdAt}`}>
-            {settings.isSequential && <TD borderColor={settings.borderColor}>{item.number}</TD>}
-            <TD borderColor={settings.borderColor}>{item.desk}</TD>
+            {settings.displayNumber && <TD borderColor={settings.borderColor}>{item.number}</TD>}
+            {settings.displayServer && <TD borderColor={settings.borderColor}>{item.desk}</TD>}
           </tr>
         );
       })}
@@ -85,6 +85,12 @@ const QBox: React.FC<{
     `${data.currentItems[0]?.number}-${data.currentItems[0]?.desk}`
   );
 
+  const shouldDisplayHeader = !settings.displayServer
+    ? false
+    : !settings.displayNumber
+    ? false
+    : true;
+
   return (
     <Wrapper {...settings}>
       {settings.displayTitle && <H1 ref={h1Ref}>{settings.name}</H1>}
@@ -93,12 +99,8 @@ const QBox: React.FC<{
           height: settings.displayTitle ? `calc(100% - ${h1Ref?.current?.clientHeight}px)` : '100%',
         }}
       >
-        <Table
-          borderColor={settings.borderColor}
-          displayTitle={settings.displayTitle}
-          {...(settings.displayTitle && { h1Height: h1Ref?.current?.clientHeight })}
-        >
-          {settings.isSequential && <TableHeader settings={settings} />}
+        <Table borderColor={settings.borderColor} displayTitle={settings.displayTitle}>
+          {shouldDisplayHeader && <TableHeader settings={settings} />}
           <TableBody settings={settings} data={data} />
         </Table>
       </div>

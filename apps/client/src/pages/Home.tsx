@@ -14,14 +14,16 @@ import { AddressDisplayer } from 'components/AddressDisplayer';
 
 const QueueOptions = styled.div`
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
 `;
 
 const QueueOptionsContainer = styled.div`
   width: 40%;
-  text-align: center;
+  min-width: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   margin: 0 auto;
   box-shadow: 0 0 5px 0 black;
   border-radius: 5px;

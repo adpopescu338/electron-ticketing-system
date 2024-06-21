@@ -29,6 +29,7 @@ const FormContainer = styled(Paper)({
   padding: '20px',
   maxWidth: '800px',
   marginTop: '20px',
+  paddingBottom: '70px',
 });
 
 const ColorPicker: React.FC<{
@@ -64,7 +65,8 @@ const DEFAULT_VALUES: QueueDisplaySettings = {
   tableHeaderDeskText: 'Desk',
   messageAudioFileName: '',
   numberAudioFileName: '',
-  isSequential: true,
+  displayNumber: true,
+  displayServer: true,
 };
 
 const useSubmit = (queueName: string, onSubmit?: (values: QueueDisplaySettings) => void) => {
@@ -129,6 +131,7 @@ export const QueueSettings: React.FC<{
       formik.setFieldValue('messageAudioFileName', res.data[0]);
       formik.setFieldValue('numberAudioFileName', res.data[0]);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -151,7 +154,7 @@ export const QueueSettings: React.FC<{
               }
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
             <FormControlLabel
               control={
                 <Switch
@@ -167,29 +170,57 @@ export const QueueSettings: React.FC<{
               The title will be displayed at the top of the queue.
             </Typography>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
             <FormControlLabel
               control={
                 <Switch
-                  checked={formik.values.isSequential}
-                  onChange={formik.handleChange}
-                  name="isSequential"
+                  checked={formik.values.displayNumber}
+                  onChange={(_, checked) => {
+                    formik.setFieldValue('displayNumber', checked);
+                    if (!checked) {
+                      formik.setFieldValue('displayServer', true);
+                    }
+                  }}
+                  name="displayNumber"
                 />
               }
-              label="Is Sequential?"
+              label="Display Number"
             />
             <br />
             <Typography variant="caption">
-              If yes, a number is displayed for each desk, else only the desk is displayed.
+              If yes, a number is displayed for each desk. If you don't display the server, the
+              number will be displayed anyway.
             </Typography>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12}>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={formik.values.displayServer}
+                  onChange={(_, checked) => {
+                    formik.setFieldValue('displayServer', checked);
+                    if (!checked) {
+                      formik.setFieldValue('displayNumber', true);
+                    }
+                  }}
+                  name="displayServer"
+                />
+              }
+              label="Display Server"
+            />
+            <br />
+            <Typography variant="caption">
+              If yes, the desk will be displayed. If you do not display the number, the desk will be
+              displayed anyway.
+            </Typography>
+          </Grid>
+          <Grid item xs={12} md={6}>
             <ColorPicker label="Text Color" formik={formik} name="color" />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
             <ColorPicker label="Background color" formik={formik} name="backgroundColor" />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
             <ColorPicker
               name="borderColor"
               label="Border Color"
@@ -198,7 +229,7 @@ export const QueueSettings: React.FC<{
             />
           </Grid>
 
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
             <ColorPicker
               name="messageColor"
               formik={formik}
@@ -206,7 +237,7 @@ export const QueueSettings: React.FC<{
               helperText="The color of the message text."
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
             <TextField
               fullWidth
               name="maxBoxesToDisplay"
@@ -223,7 +254,7 @@ export const QueueSettings: React.FC<{
             />
           </Grid>
 
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
             <ColorPicker
               name="messageBackgroundColor"
               label="Message Background Color"
@@ -231,7 +262,7 @@ export const QueueSettings: React.FC<{
               helperText="The background color of the message area."
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
             <TextField
               fullWidth
               id="tableHeaderNumberText"
@@ -249,7 +280,7 @@ export const QueueSettings: React.FC<{
               }
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
             <TextField
               fullWidth
               id="tableHeaderDeskText"
@@ -267,7 +298,7 @@ export const QueueSettings: React.FC<{
               }
             />
           </Grid>
-          <Grid item xs={5}>
+          <Grid item xs={10} md={5}>
             <FormControl fullWidth>
               <InputLabel id="messageAudioFileName-label">Message Audio File Name</InputLabel>
               <Select
@@ -286,7 +317,7 @@ export const QueueSettings: React.FC<{
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={1}>
+          <Grid item xs={2} md={1}>
             <IconButton
               color="primary"
               disabled={!formik.values.messageAudioFileName}
@@ -298,7 +329,7 @@ export const QueueSettings: React.FC<{
             </IconButton>
           </Grid>
 
-          <Grid item xs={5}>
+          <Grid item xs={10} md={5}>
             <FormControl fullWidth>
               <InputLabel id="numberAudioFileName-label">Number Audio File Name</InputLabel>
               <Select
@@ -317,7 +348,7 @@ export const QueueSettings: React.FC<{
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={1}>
+          <Grid item xs={2} md={1}>
             <IconButton
               color="primary"
               disabled={!formik.values.numberAudioFileName}

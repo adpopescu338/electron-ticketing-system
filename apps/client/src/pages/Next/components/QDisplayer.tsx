@@ -6,20 +6,20 @@ import { Typography } from '@mui/material';
 const Container = styled.div`
   display: flex;
   gap: 1rem;
-  justify-content: space-between;
+  justify-content: space-evenly;
   padding: 10px;
+  flex-wrap: wrap;
 `;
 
 export const QDisplayer: React.FC<{
   settings: QueueDisplaySettings;
   queueData: FeUseDataReturnType;
-  currentDesk: number | null;
+  currentDesk: string | null;
 }> = ({ settings, currentDesk }) => {
   const data = useQueueData(settings.maxBoxesToDisplay, settings.name, true);
 
   return (
     <Container>
-      <QueueContainer hide></QueueContainer>
       <QueueDisplayer
         currentDesk={currentDesk}
         items={data.currentItems}
@@ -70,10 +70,18 @@ const Row = styled.div<{ highlight: boolean; center?: boolean }>`
   border: 1px solid #000;
 `;
 
+const shouldCenterRowContent = (settings: QueueDisplaySettings) => {
+  if (settings.displayServer && !settings.displayNumber) return true;
+
+  if (!settings.displayServer && settings.displayNumber) return true;
+
+  return false;
+};
+
 const QueueDisplayer: React.FC<{
   items: FeUseDataReturnType['currentItems'] | FeUseDataReturnType['nextItems'];
   message?: FeUseDataReturnType['message'];
-  currentDesk?: number | null;
+  currentDesk?: string | null;
   incoming?: boolean;
   settings: QueueDisplaySettings;
 }> = ({ items, incoming, message, currentDesk, settings }) => {
@@ -82,6 +90,7 @@ const QueueDisplayer: React.FC<{
   }
 
   const title = incoming ? 'Incoming' : 'Current';
+  const centerRowContent = shouldCenterRowContent(settings);
 
   return (
     <QueueContainer>
@@ -98,9 +107,9 @@ const QueueDisplayer: React.FC<{
       {items.map((item, i) => {
         if (item === null) {
           return (
-            <Row highlight={false} key={`${i}`}>
-              {settings.isSequential && <span>-</span>}
-              <span>-</span>
+            <Row highlight={false} key={`${i}`} center={centerRowContent}>
+              {settings.displayNumber && <span>-</span>}
+              {settings.displayServer && <span>-</span>}
             </Row>
           );
         }
@@ -108,10 +117,10 @@ const QueueDisplayer: React.FC<{
           <Row
             highlight={currentDesk === item.desk}
             key={`${item.number}-${item.desk}-${item.createdAt}`}
-            center
+            center={centerRowContent}
           >
-            {settings.isSequential && <span>{item.number}</span>}
-            <span>{item.desk}</span>
+            {settings.displayNumber && <span>{item.number}</span>}
+            {settings.displayServer && <span>{item.desk}</span>}
           </Row>
         );
       })}
