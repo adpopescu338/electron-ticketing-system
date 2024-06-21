@@ -4,18 +4,16 @@ import swal from 'sweetalert';
 import HelpIcon from '@mui/icons-material/Help';
 
 const Container = styled.div`
-
   bottom: 0;
   left: 0;
   padding: 10px;
 `;
 
+const text =
+  'Tick is a queue management system built by Alexandru Popescu. It\'s free, open-source (available at https://github.com/adpopescu338/electron-ticketing-system) at it aims to be a versatile solution that can accommodate different queue setups';
+
 const onClick = () => {
-  swal(
-    'About',
-    'Tick is a queue management system built by Alexandru Popescu as the artifact for my final year Computing project at Arden University.\n' +
-      'For any questions or suggestions, please contact me at stu98198@ardenuniversity.ac.uk'
-  );
+  swal('About', text);
 };
 
 export const Footer = () => {
