@@ -1,13 +1,11 @@
 import React from 'react';
-import { EventNames, QueueDisplaySettings, SystemSettings } from '@repo/types';
+import { EventNames, FeUseDataReturnType, QueueDisplaySettings, SystemSettings } from '@repo/types';
 import Button from '@mui/material/Button';
 import styled from 'styled-components';
 import { useSocket } from 'hooks/useSocket';
 import swal from 'sweetalert';
 import { isSwalNumberValid } from 'lib/isSwalNumberValid';
 import { useSystemSettings } from 'hooks/useSystemSettings';
-
-const WAIT_AFTER_CALL = 5 * 1000;
 
 const Container = styled.div`
   padding-bottom: 20px;
@@ -34,11 +32,14 @@ const getNextNumber = (
 export const NextButton: React.FC<{
   desk: number;
   queueSettings: QueueDisplaySettings;
-  currentNumber: number | null | undefined;
-}> = ({ desk, queueSettings }) => {
+  queueData: FeUseDataReturnType;
+}> = ({ desk, queueSettings, queueData }) => {
   const [disabled, setDisabled] = React.useState(false);
   const socket = useSocket(queueSettings.name);
   const [systemSettings, loading] = useSystemSettings();
+
+  const shouldButtonBeDisabled =
+    disabled || !desk || loading || queueData.nextItems.some((item) => item.desk === desk);
 
   const handleNext = () => {
     socket!.emit('sendNextReq' satisfies EventNames, desk);
@@ -46,7 +47,7 @@ export const NextButton: React.FC<{
 
     setTimeout(() => {
       setDisabled(false);
-    }, WAIT_AFTER_CALL);
+    }, systemSettings.Q_ITEM_DISPLAY_TIME_SECONDS * 1000);
   };
 
   const handleSpecificNumber = async () => {
@@ -98,10 +99,8 @@ export const NextButton: React.FC<{
 
     setTimeout(() => {
       setDisabled(false);
-    }, WAIT_AFTER_CALL);
+    }, systemSettings.Q_ITEM_DISPLAY_TIME_SECONDS * 1000);
   };
-
-  const buttonsDisabled = disabled || !desk || loading;
 
   return (
     <Container>
@@ -112,7 +111,7 @@ export const NextButton: React.FC<{
               size="large"
               variant="outlined"
               onClick={handleSpecificNumber}
-              disabled={buttonsDisabled}
+              disabled={shouldButtonBeDisabled}
             >
               Call a specific number
             </Button>
@@ -122,7 +121,7 @@ export const NextButton: React.FC<{
             variant="contained"
             color="primary"
             onClick={handleNext}
-            disabled={buttonsDisabled}
+            disabled={shouldButtonBeDisabled}
           >
             Next
           </Button>
