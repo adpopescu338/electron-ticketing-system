@@ -1,6 +1,6 @@
 {
   "name": "tick",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Queue management system.",
   "private": true,
   "main": "./dist/main.js",
@@ -51,7 +51,11 @@
     },
     "win": {
       "icon": "./dist/q.ico",
-      "target": "portable"
+      "target": "portable",
+      "arch": [
+        "x64",
+        "ia32"
+      ]
     },
     "mac": {
       "icon": "./dist/q.icns"
