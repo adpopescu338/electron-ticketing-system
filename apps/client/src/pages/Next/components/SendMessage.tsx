@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import TextField from '@mui/material/TextField';
-import { IconButton } from '@mui/material';
+import { Button } from '@mui/material';
 import ScheduleSendIcon from '@mui/icons-material/ScheduleSend';
 import { EventNames, FeUseDataReturnType } from '@repo/types';
 import React from 'react';
@@ -50,15 +50,21 @@ export const SendMessage: React.FC<{
         multiline
         maxRows={20}
         fullWidth
+        id="message-input"
         style={{
           minWidth: '280px',
           maxWidth: '600px',
         }}
       />
-      <IconButton color="primary" disabled={!!queueData.message} onClick={handleSend}>
-        <ScheduleSendIcon />
+      <Button
+        color="primary"
+        disabled={!!queueData.message}
+        onClick={handleSend}
+        startIcon={<ScheduleSendIcon />}
+        id="send-message-button"
+      >
         Send
-      </IconButton>
+      </Button>
     </Container>
   );
 };

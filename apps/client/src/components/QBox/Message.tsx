@@ -2,7 +2,9 @@ import styled from 'styled-components';
 import { QueueDisplaySettings } from '@repo/types';
 import { useMaxFontSize } from '../../hooks/useMaxFontSize';
 
-const Container = styled.div<{
+const Container = styled.div.attrs({
+  className: 'queue-display-message-container',
+})<{
   settings: QueueDisplaySettings;
 }>`
   width: 100%;
@@ -27,7 +29,7 @@ export const Message: React.FC<{
 
   return (
     <Container settings={settings} ref={ref}>
-      <h1>{text}</h1>
+      <h1 id={'queue-message-text-' + settings.name}>{text}</h1>
     </Container>
   );
 };

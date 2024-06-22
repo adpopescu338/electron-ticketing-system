@@ -3,7 +3,7 @@ import { EventNames, FeUseDataReturnType, QItem, Queue, QueueDisplaySettings } f
 import { useSocket } from './useSocket';
 import axios from 'axios';
 
-const initialValues = {
+const initialValues: Queue = {
   message: null,
   currentItems: [],
   nextItems: [],
@@ -92,7 +92,7 @@ export const useQueueData = (
 
     // load initial data
     axios
-      .get<Queue>(`/q/${queueName}`)
+      .get<Queue>(`/api/q/${queueName}`)
       .then(({ data }): void => {
         setDataFromServer(data);
       })

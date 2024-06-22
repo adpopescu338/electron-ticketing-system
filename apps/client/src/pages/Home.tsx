@@ -1,5 +1,5 @@
 import { useCtx } from 'hooks/useCtx';
-import { IconButton, Link, Tooltip, Typography } from '@mui/material';
+import { Button, Tooltip, Typography } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import TvIcon from '@mui/icons-material/Tv';
@@ -99,92 +99,127 @@ export const Home: React.FC = () => {
   return (
     <Container>
       <AddressDisplayer />
-      <Typography variant="h4">Queue Settings</Typography>
+      <Typography variant="h4" id="home-page-title">
+        Queue Settings
+      </Typography>
       <Typography variant="body1">Here you can edit your queues and create new ones.</Typography>
       {queuesSettings.map((queue) => (
-        <QueueOptionsContainer key={queue.name}>
-          <Typography variant="h5">{queue.name}</Typography>
+        <QueueOptionsContainer key={queue.name} className="queueContainer">
+          <Typography variant="h5" className="queue-title">
+            {queue.name}
+          </Typography>
 
           <QueueOptions>
             <Tooltip title="Configure this queue settings.">
-              <Link href={`/queue/${queue.name}`}>
-                <IconButton color="primary">
-                  Edit settings&nbsp;
-                  <EditIcon />
-                </IconButton>
-              </Link>
+              <Button
+                size="large"
+                color="primary"
+                endIcon={<EditIcon />}
+                href={`/queue/${queue.name}`}
+              >
+                Edit settings
+              </Button>
             </Tooltip>
             <Tooltip title={`Open this queue in a new display tab. ${displayIntructions}`}>
-              <Link href={`/display/${queue.name}`} target="_blank">
-                <IconButton color="primary">
-                  Display&nbsp;
-                  <TvIcon />
-                </IconButton>
-              </Link>
+              <Button
+                size="large"
+                color="primary"
+                href={`/display/${queue.name}`}
+                target="_blank"
+                endIcon={<TvIcon />}
+                id={'queue-open-display-button-' + queue.name}
+              >
+                Display
+              </Button>
             </Tooltip>
 
             <Tooltip title="Open the page where you can interact with this queue, by calling the next number, etc.">
-              <Link href={`/next/${queue.name}`}>
-                <IconButton color="primary">
-                  Open&nbsp;
-                  <QueuePlayNextIcon />
-                </IconButton>
-              </Link>
+              <Button
+                size="large"
+                color="primary"
+                href={`/next/${queue.name}`}
+                endIcon={<QueuePlayNextIcon />}
+                id="queue-open-operation-page-button"
+              >
+                Open
+              </Button>
             </Tooltip>
             <Tooltip title="Delete this queue permanently. This action cannot be undone.">
-              <IconButton color="error" onClick={() => handleDelete!(queue.name)}>
-                Delete&nbsp;
-                <DeleteIcon />
-              </IconButton>
+              <Button
+                size="large"
+                color="error"
+                onClick={() => handleDelete!(queue.name)}
+                endIcon={<DeleteIcon />}
+              >
+                Delete
+              </Button>
             </Tooltip>
           </QueueOptions>
         </QueueOptionsContainer>
       ))}
 
       <Tooltip title="Create a new queue. You will be able to customize the default settings">
-        <Link href="/queue/_new" sx={linkStyle}>
-          <IconButton color="primary">
-            Create new queue&nbsp;
-            <AddCircleIcon />
-          </IconButton>
-        </Link>
+        <Button
+          id="create-new-queue-button"
+          size="large"
+          href="/queue/_new"
+          sx={linkStyle}
+          color="primary"
+          endIcon={<AddCircleIcon />}
+        >
+          Create new queue
+        </Button>
       </Tooltip>
 
       {hasQ && (
         <Tooltip title={`Open all queues in a new display tab. ${displayIntructions}`}>
-          <Link href="/display" target="_blank" sx={linkStyle}>
-            <IconButton color="primary">
-              Display all&nbsp;
-              <QueuePlayNextIcon />
-            </IconButton>
-          </Link>
+          <Button
+            size="large"
+            href="/display"
+            target="_blank"
+            sx={linkStyle}
+            color="primary"
+            endIcon={<QueuePlayNextIcon />}
+          >
+            Display all
+          </Button>
         </Tooltip>
       )}
 
       {hasQ && (
         <Tooltip title="This will not save your settings, but you can use it to display your queues in a personalized way. You will be able to select which queues to display and customize their appearance.">
-          <Link href="/custom-display" sx={linkStyle}>
-            <IconButton color="primary">
-              Create a personalized display for this session only&nbsp;
-              <TuneIcon />
-            </IconButton>
-          </Link>
+          <Button
+            size="large"
+            href="/custom-display"
+            sx={linkStyle}
+            color="primary"
+            endIcon={<TuneIcon />}
+          >
+            Create a personalized display for this session only
+          </Button>
         </Tooltip>
       )}
 
       <Tooltip title="Edit system settings, like number or message duration, max or min number (like 0 and 99), etc.">
-        <Link href="/system-settings" sx={linkStyle}>
-          <IconButton color="primary">
-            Edit system settings&nbsp;
-            <SettingsIcon />
-          </IconButton>
-        </Link>
+        <Button
+          size="large"
+          color="primary"
+          href="/system-settings"
+          sx={linkStyle}
+          endIcon={<SettingsIcon />}
+        >
+          Edit system settings
+        </Button>
       </Tooltip>
       <Tooltip title="This will delete all the application data.">
-        <IconButton color="error" onClick={handleDeleteEverything}>
-          Delete all data&nbsp;
-          <DeleteIcon />
-        </IconButton>
+        <Button
+          size="large"
+          color="error"
+          onClick={handleDeleteEverything}
+          endIcon={<DeleteIcon />}
+        >
+          Delete all data
+        </Button>
       </Tooltip>
     </Container>
   );

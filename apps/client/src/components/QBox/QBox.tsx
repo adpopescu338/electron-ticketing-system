@@ -56,14 +56,14 @@ const TableBody: React.FC<{
       {data.currentItems.map((item, i) => {
         if (item === null) {
           return (
-            <tr key={i}>
+            <tr key={i} className="empty-queue-item">
               {settings.displayNumber && <TD borderColor={settings.borderColor}>-</TD>}
               {settings.displayServer && <TD borderColor={settings.borderColor}>-</TD>}
             </tr>
           );
         }
         return (
-          <tr key={`${item.number}-${item.desk}-${item.createdAt}`}>
+          <tr key={`${item.number}-${item.desk}-${item.createdAt}`} className="queue-item">
             {settings.displayNumber && <TD borderColor={settings.borderColor}>{item.number}</TD>}
             {settings.displayServer && <TD borderColor={settings.borderColor}>{item.desk}</TD>}
           </tr>

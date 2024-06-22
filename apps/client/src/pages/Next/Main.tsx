@@ -20,6 +20,21 @@ export const Next: React.FC = () => {
   return <DashboardWorker queueSettings={queueSettings} />;
 };
 
+const Loading = () => {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '90vh',
+      }}
+    >
+      <CircularProgress />
+    </div>
+  );
+};
+
 const DashboardWorker: React.FC<{ queueSettings: QueueDisplaySettings }> = ({ queueSettings }) => {
   const socket = useSocket(queueSettings.name);
   const [desk, setDesk] = React.useState<string | null>(null);
@@ -35,12 +50,11 @@ const DashboardWorker: React.FC<{ queueSettings: QueueDisplaySettings }> = ({ qu
     updateDesk(setDesk);
   }, []);
 
-  if (!socket) return <CircularProgress />;
-  if (!queueData) return <CircularProgress />;
-  if (!desk) return <CircularProgress />;
+  if (!socket || !queueData || !desk) return <Loading />;
 
   return (
     <div
+      id="next-page-container"
       style={{
         display: 'flex',
         flexDirection: 'column',
@@ -49,11 +63,7 @@ const DashboardWorker: React.FC<{ queueSettings: QueueDisplaySettings }> = ({ qu
       }}
     >
       <Desk desk={desk} setDesk={setDesk} />
-      <NextButton
-        desk={desk}
-        queueSettings={queueSettings}
-        queueData={queueData}
-      />
+      <NextButton desk={desk} queueSettings={queueSettings} queueData={queueData} />
       <QDisplayer settings={queueSettings} queueData={queueData} currentDesk={desk} />
       <SendMessage queueName={queueSettings.name} queueData={queueData} desk={desk} />
     </div>

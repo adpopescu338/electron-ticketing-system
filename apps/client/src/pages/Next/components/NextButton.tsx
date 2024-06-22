@@ -118,6 +118,7 @@ export const NextButton: React.FC<{
             </Button>
           )}
           <Button
+            id="next-button"
             size="large"
             variant="contained"
             color="primary"
