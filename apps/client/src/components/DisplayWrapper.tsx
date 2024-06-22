@@ -1,24 +1,25 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const Wrapper = styled.div<{
+const Wrapper = styled.div.attrs(() => ({
+  id: 'queue-displayer-wrapper',
+}))<{
   columns: number;
 }>`
-    display: grid;
-    grid-template-columns: ${({ columns }) => new Array(columns).fill('1fr').join(' ')};
-    height: 100vh;
-    overflow: hidden;
-  }>`;
+  display: grid;
+  grid-template-columns: ${({ columns }) => new Array(columns).fill('1fr').join(' ')};
+  height: 100vh;
+  overflow: hidden;
+`;
 
 export const DisplayWrapper: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   React.useEffect(() => {
     const listener = (e: KeyboardEvent) => {
-      console.log('Keydown', e.key);
       if (e.key === 'Escape') {
         if (document.fullscreenElement) {
-          console.log('In fullscreen. Existting fullscreen.');
+          console.log('In fullscreen. Exiting fullscreen.');
           document.exitFullscreen();
         } else {
           console.log('Not fullscreen, closing.');
@@ -45,6 +46,8 @@ export const DisplayWrapper: React.FC<{
       document.removeEventListener('keydown', listener);
     };
   }, []);
+
   const childrenCount = React.Children.count(children);
+
   return <Wrapper columns={childrenCount}>{children}</Wrapper>;
 };

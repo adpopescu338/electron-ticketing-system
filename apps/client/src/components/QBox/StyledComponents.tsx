@@ -1,9 +1,15 @@
+/* eslint-disable react-refresh/only-export-components */
 import styled from 'styled-components';
 import { QueueDisplaySettings } from '@repo/types';
 
-export const Wrapper = styled.div<
-  Pick<QueueDisplaySettings, 'color' | 'backgroundColor' | 'borderColor' | 'displayTitle'>
->`
+type Props = Pick<
+  QueueDisplaySettings,
+  'color' | 'backgroundColor' | 'borderColor' | 'displayTitle' | 'name'
+>;
+
+export const Wrapper = styled.div.attrs({
+  className: 'queue-display-container',
+})<Props>`
   width: 100%;
   height: 100vh;
   border-left: ${({ borderColor }) => `3px solid ${borderColor}`};
@@ -21,7 +27,9 @@ export const Wrapper = styled.div<
   }
 `;
 
-export const H1 = styled.h1`
+export const H1 = styled.h1.attrs({
+  className: 'queue-display-title',
+})`
   height: 15%;
   text-align: center;
   padding: 0;

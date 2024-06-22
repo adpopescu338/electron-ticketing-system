@@ -140,6 +140,7 @@ export const QueueSettings: React.FC<{
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <TextField
+              id="queue-name-form-field"
               disabled={!!queueByName}
               fullWidth
               name="name"

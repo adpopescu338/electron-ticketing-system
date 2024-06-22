@@ -17,7 +17,9 @@
     "build-icons": "yarn electron-icon-builder --input=./apps/client/public/q.png --output=./build --flatten",
     "prepackage": "yarn build && mkdir -p ./dist && yarn run copy-server && yarn run copy-client && yarn build-icons",
     "package": "yarn prepackage && electron-builder --mac --linux --win",
-    "start": "export NODE_ENV=development && cd apps/server && yarn start"
+    "package:mac64": "rm -rf ./build && yarn prepackage && electron-builder --mac zip --arm64",
+    "start": "export NODE_ENV=development && cd apps/server && yarn start",
+    "test": "wdio"
   },
   "workspaces": {
     "packages": [
@@ -29,14 +31,23 @@
   "author": "Alexandru Popescu",
   "license": "CC0-1.0",
   "devDependencies": {
+    "@types/chromedriver": "^81.0.5",
     "@types/express": "^4.17.21",
     "@types/lodash": "^4.14.202",
+    "@types/mocha": "^10.0.6",
+    "@wdio/cli": "^8.39.0",
+    "@wdio/local-runner": "^8.39.0",
+    "@wdio/mocha-framework": "^8.39.0",
+    "@wdio/spec-reporter": "^8.39.0",
+    "chromedriver": "^126.0.3",
     "concurrently": "^8.2.2",
     "electron": "29.1.0",
     "electron-builder": "^24.13.3",
     "electron-icon-builder": "^2.0.1",
+    "ts-node": "^10.9.2",
     "turbo": "^1.12.4",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "wdio-electron-service": "^6.6.1"
   },
   "dependencies": {
     "lodash": "^4.17.21"
