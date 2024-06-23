@@ -10,7 +10,7 @@ const Container = styled.div`
 `;
 
 const text =
-  'Tick is a queue management system built by Alexandru Popescu. It\'s free, open-source (available at https://github.com/adpopescu338/electron-ticketing-system) at it aims to be a versatile solution that can accommodate different queue setups';
+  "Tick is a queue management system built by Alexandru Popescu. It's free, open-source (available at https://github.com/adpopescu338/electron-ticketing-system) and it aims to be a versatile solution that can accommodate different queue setups";
 
 const onClick = () => {
   swal('About', text);

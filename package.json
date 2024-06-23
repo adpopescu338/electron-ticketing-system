@@ -1,6 +1,6 @@
 {
   "name": "tick",
-  "version": "1.0.4",
+  "version": "2.0.0",
   "description": "Queue management system.",
   "private": true,
   "main": "./dist/main.js",

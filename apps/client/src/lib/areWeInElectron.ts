@@ -1,0 +1,1 @@
+export const areWeInElectron = () => 'inElectron' in window && !!window.inElectron

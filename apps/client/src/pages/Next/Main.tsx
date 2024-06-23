@@ -1,6 +1,6 @@
 import React from 'react';
 import { QueueDisplaySettings } from '@repo/types';
-import { CircularProgress } from '@mui/material';
+import { CircularProgress, Typography } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { updateDesk } from './utils';
 import { Desk, NextButton, QDisplayer, SendMessage } from './components';
@@ -9,12 +9,30 @@ import { useSocket } from 'hooks/useSocket';
 import { useCtx } from 'hooks/useCtx';
 
 export const Next: React.FC = () => {
-  const { queuesSettings } = useCtx();
+  const { queuesSettings, loadingQueuesSettings } = useCtx();
   const { queueName } = useParams();
   const queueSettings = queuesSettings.find((q) => q.name === queueName);
 
-  if (!queueSettings) {
-    return <div>Queue not found</div>;
+  if (!queueSettings || loadingQueuesSettings) {
+    return (
+      <div
+        style={{
+          width: '100%',
+          height: '80vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        {loadingQueuesSettings ? (
+          <CircularProgress />
+        ) : (
+          <Typography variant="h5" color="error">
+            Queue "{queueName}" not found
+          </Typography>
+        )}
+      </div>
+    );
   }
 
   return <DashboardWorker queueSettings={queueSettings} />;

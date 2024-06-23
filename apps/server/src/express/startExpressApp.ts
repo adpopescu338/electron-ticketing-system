@@ -1,5 +1,5 @@
 import { QueueManagers } from './../libs/Queue';
-import { EventNames } from '@repo/types';
+import { DeleteIncomingItemPayload, EventNames } from '@repo/types';
 import express from 'express';
 import path from 'path';
 import http from 'http';
@@ -17,6 +17,7 @@ QueueManagers.init(io);
 
 io.on('connection', (socket) => {
   socket.on('joinQueue' satisfies EventNames, (queueName: string) => {
+    console.log("socket joined queue", queueName)
     const queueExists = QueueNames.has(queueName);
     if (!queueExists) {
       console.log('Queue does not exist', queueName);
@@ -47,6 +48,16 @@ io.on('connection', (socket) => {
       QueueManager.callSpecificNumber(desk, numberToCall, resetCountFromThis);
     }
   );
+
+  socket.on('deleteIncomingItem' satisfies EventNames, (payload: DeleteIncomingItemPayload) => {
+    const queueName = findSocketQueueName(socket);
+    console.log(`deleteIncomingItem::payload for queue "${queueName}"`, payload)
+    const QueueManager = QueueManagers.get(queueName);
+    if(!QueueManager){
+      console.error("deleteIncomingItem:: No queue found for name", queueName)
+    }
+    QueueManager.deleteIncomingItem(payload);
+  });
 });
 
 app.use(express.json());

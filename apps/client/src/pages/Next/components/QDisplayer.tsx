@@ -1,7 +1,16 @@
 import styled from 'styled-components';
-import { FeUseDataReturnType, QueueDisplaySettings } from '@repo/types';
-import { useQueueData } from '../../../hooks/useQueueData';
-import { Typography } from '@mui/material';
+import {
+  DeleteIncomingItemPayload,
+  EventNames,
+  FeUseDataReturnType,
+  QItem,
+  QMessage,
+  QueueDisplaySettings,
+} from '@repo/types';
+import { useQueueData } from 'hooks/useQueueData';
+import { Typography, Button } from '@mui/material';
+import { useSocket } from 'hooks/useSocket';
+import CancelIcon from '@mui/icons-material/Cancel';
 
 const Container = styled.div`
   display: flex;
@@ -61,22 +70,49 @@ const QueueContainer = styled.div<{
   overflow-y: auto;
 `;
 
-const Row = styled.div<{ highlight: boolean; center?: boolean }>`
+const Row = styled.div<{ highlight: boolean }>`
   display: flex;
-  justify-content: ${({ center }) => (center ? 'center' : 'space-between')};
+  justify-content: space-between;
   padding: 10px;
   background-color: ${({ highlight }) => (highlight ? '#fff3cf' : 'transparent')};
   border-radius: 5px;
   border: 1px solid #000;
   word-break: break-all;
+  position: relative;
 `;
 
-const shouldCenterRowContent = (settings: QueueDisplaySettings) => {
-  if (settings.displayServer && !settings.displayNumber) return true;
+const deleteItemStyles = {
+  position: 'absolute',
+  top: 'calc(50% - 18px)',
+  right: 'calc(50% - 60px)',
+  opacity: 0.1,
+  transition: 'opacity 0.3s',
+  '&:hover': {
+    opacity: 1,
+  },
+} as const;
 
-  if (!settings.displayServer && settings.displayNumber) return true;
+const DeleteItem: React.FC<{
+  handleDelete: (payload: DeleteIncomingItemPayload) => void;
+  itemOrMessage: QMessage | QItem;
+}> = ({ handleDelete, itemOrMessage }) => {
+  const onClick = () =>
+    handleDelete({
+      itemId: 'text' in itemOrMessage ? null : itemOrMessage.id,
+      messageId: 'text' in itemOrMessage ? itemOrMessage.id : null,
+    });
 
-  return false;
+  return (
+    <Button
+      onClick={onClick}
+      color="error"
+      sx={deleteItemStyles}
+      endIcon={<CancelIcon />}
+      variant="contained"
+    >
+      Remove
+    </Button>
+  );
 };
 
 const QueueDisplayer: React.FC<{
@@ -86,8 +122,14 @@ const QueueDisplayer: React.FC<{
   incoming?: boolean;
   settings: QueueDisplaySettings;
 }> = ({ items, incoming, message, currentDesk, settings }) => {
-  const centerRowContent = shouldCenterRowContent(settings);
   const title = incoming ? 'Incoming' : 'Current';
+  const socket = useSocket(settings.name);
+
+  const handleDelete = async (payload: DeleteIncomingItemPayload) => {
+    if (!socket) return console.error('Socket not initialized');
+
+    socket.emit('deleteIncomingItem' satisfies EventNames, payload);
+  };
 
   if (!incoming && message?.displayedAt) {
     return (
@@ -96,7 +138,7 @@ const QueueDisplayer: React.FC<{
           {title}
         </Typography>
         <Typography textAlign="center">Message sent by {message.desk}</Typography>
-        <Row highlight={currentDesk === message.desk} center>
+        <Row highlight={currentDesk === message.desk} style={{ justifyContent: 'center' }}>
           {message.text}
         </Row>
       </QueueContainer>
@@ -108,8 +150,9 @@ const QueueDisplayer: React.FC<{
       <Typography variant="h4" textAlign="center">
         {title}
       </Typography>
-      {incoming && message && !message.displayedAt && (
+      {incoming && message && message.desk === currentDesk && !message.displayedAt && (
         <Row highlight={currentDesk === message.desk}>
+          <DeleteItem handleDelete={handleDelete} itemOrMessage={message} />
           <Typography variant="h6" textAlign="center">
             {message.text}
           </Typography>
@@ -121,9 +164,9 @@ const QueueDisplayer: React.FC<{
       {items.map((item, i) => {
         if (item === null) {
           return (
-            <Row highlight={false} key={`${i}`} center={centerRowContent}>
-              {settings.displayNumber && <span>-</span>}
-              {settings.displayServer && <span>-</span>}
+            <Row highlight={false} key={`${i}`}>
+              <span>-</span>
+              <span>-</span>
             </Row>
           );
         }
@@ -131,10 +174,12 @@ const QueueDisplayer: React.FC<{
           <Row
             highlight={currentDesk === item.desk}
             key={`${item.number}-${item.desk}-${item.createdAt}`}
-            center={centerRowContent}
           >
-            {settings.displayNumber && <span>{item.number}</span>}
-            {settings.displayServer && <span>{item.desk}</span>}
+            {incoming && item.desk === currentDesk && (
+              <DeleteItem handleDelete={handleDelete} itemOrMessage={item} />
+            )}
+            <span>{item.number}</span>
+            <span>{item.desk}</span>
           </Row>
         );
       })}

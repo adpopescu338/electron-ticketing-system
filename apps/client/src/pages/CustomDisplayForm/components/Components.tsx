@@ -4,6 +4,7 @@ import { DisplaySettings } from './DisplaySettings';
 import TvIcon from '@mui/icons-material/Tv';
 import React from 'react';
 import { QueueDisplaySettings } from '@repo/types';
+import { areWeInElectron } from 'lib/areWeInElectron';
 
 export const Components: React.FC<{
   step: number;
@@ -48,6 +49,11 @@ export const Components: React.FC<{
     window.open(`/display/custom/${id}`, '_blank');
   };
 
+  const text = areWeInElectron()
+    ? `In the display window, press 'esc' to close the window.`
+    : `In the display window, press 'f' to toggle full screen. Press 'esc' to exit full screen, or
+        to close the display window.`;
+
   return (
     <div
       style={{
@@ -55,13 +61,11 @@ export const Components: React.FC<{
         padding: '40px',
       }}
     >
-      <Button size="large" variant="contained" onClick={launch}>
-        Launch display in a separate window&nbsp;
-        <TvIcon />
+      <Button size="large" variant="contained" onClick={launch} endIcon={<TvIcon />}>
+        Launch display in a separate window
       </Button>
       <Typography variant="caption" style={{ display: 'block', marginTop: '10px' }}>
-        In the display window, press 'f' to toggle full screen. Press 'esc' to exit full screen, or
-        to close the display window.
+        {text}
       </Typography>
     </div>
   );

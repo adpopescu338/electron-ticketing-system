@@ -1,4 +1,4 @@
-import { EventNames, QItem, QMessage, Queue, Queues, SystemSettings } from '@repo/types';
+import { DeleteIncomingItemPayload, EventNames, QItem, QMessage, Queue, Queues, SystemSettings } from '@repo/types';
 import { getSystemSettings, setQueueState, QueueNames, getQueueState } from './storage';
 import { isNil } from 'lodash';
 import { Server as Socket } from 'socket.io';
@@ -145,11 +145,20 @@ class QueueManagerCl {
           this.emitUpdate();
           this.setTimeout(message);
           return;
-        } else {
+        } else if (mostRecentItem) {
           this.logger.debug(
             'handleBackground:: Most recent item display time not passed, waiting for it to pass'
           );
           this.setTimeout(mostRecentItem);
+          return;
+        } else {
+          this.logger.debug(
+            'handleBackground:: No most recent item found. Going to display message'
+          );
+          message.displayedAt = Date.now();
+
+          this.emitUpdate();
+          this.setTimeout(message);
           return;
         }
       }
@@ -202,12 +211,13 @@ class QueueManagerCl {
   }
 
   private getTimeDiff(item: QItem | QMessage) {
-    const { displayedAt } = item;
+    const { displayedAt } = item
     if (!displayedAt) return null;
     return Date.now() - displayedAt;
   }
 
   private setTimeout(item: QItem | QMessage) {
+    this.logger.debug("setTimeout::item", item)
     const timeDiff = this.getTimeDiff(item);
     if (timeDiff === null) {
       this.logger.debug('setTimeout:: timeDiff is null, returning');
@@ -267,6 +277,32 @@ class QueueManagerCl {
   private emitItemAdded(nextItems: QItem[]): void {
     this.logger.debug(`emitItemAdded, emitting itemAdded`);
     this.socket.to(this.queueName).emit('nextItemAdded' satisfies EventNames, nextItems);
+  }
+
+  private emitIncomingItemDeleted(): void {
+    this.logger.debug('emitIncomingItemDeleted:: emitting incoming item deleted')
+    this.socket.to(this.queueName).emit('incomingItemDeleted' satisfies EventNames, this.queue);
+  }
+
+  public async deleteIncomingItem(payload: DeleteIncomingItemPayload): Promise<void> {
+    const { itemId, messageId } = payload;
+    if (!itemId && !messageId) return;
+    if (messageId) {
+      if (!this.queue.message) return;
+      this.queue.message = null;
+
+    } else {
+      const index = this.queue.nextItems.findIndex((item) => item.id === itemId);
+      if (index === -1) return;
+      this.queue.nextItems.splice(index, 1);
+    }
+
+    clearTimeout(this.timeout);
+    this.timeout = null;
+
+    this.emitIncomingItemDeleted()
+    this.handleBackground()
+
   }
 }
 

@@ -25,3 +25,5 @@ const getLocalIP = (): string[] => {
 contextBridge.exposeInMainWorld('variables', {
   addresses: getLocalIP(),
 });
+
+contextBridge.exposeInMainWorld('inElectron', true);

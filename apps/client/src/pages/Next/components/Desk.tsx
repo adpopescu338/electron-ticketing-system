@@ -7,7 +7,7 @@ import { updateDesk } from '../utils';
 const Container = styled.div`
   display: flex;
   flex-direction: row;
-  align-items: flex-end;
+  align-items: center;
   justify-content: flex-end;
   padding-right: 10px;
 `;
@@ -18,7 +18,7 @@ export const Desk: React.FC<{
 }> = ({ desk, setDesk }) => {
   return (
     <Container>
-      <Typography variant="h4">Desk {desk}</Typography>
+      <Typography variant="h5">Desk {desk}</Typography>
       <IconButton onClick={() => updateDesk(setDesk)} size="large" color="primary">
         <EditIcon />
       </IconButton>

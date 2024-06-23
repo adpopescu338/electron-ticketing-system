@@ -1,3 +1,4 @@
+import { areWeInElectron } from 'lib/areWeInElectron';
 import React from 'react';
 import styled from 'styled-components';
 
@@ -18,7 +19,7 @@ export const DisplayWrapper: React.FC<{
   React.useEffect(() => {
     const listener = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        if (document.fullscreenElement) {
+        if (!areWeInElectron() && document.fullscreenElement) {
           console.log('In fullscreen. Exiting fullscreen.');
           document.exitFullscreen();
         } else {
@@ -29,7 +30,7 @@ export const DisplayWrapper: React.FC<{
       }
 
       // full screen
-      if (e.key.toLowerCase() === 'f') {
+      if (!areWeInElectron() && e.key.toLowerCase() === 'f') {
         console.log('Toggling fullscreen');
         // check if is already full screen
         if (document.fullscreenElement) {

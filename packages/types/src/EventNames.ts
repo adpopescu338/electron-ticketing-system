@@ -4,4 +4,6 @@ export type EventNames =
   | 'sendNextReq'
   | 'messageSent'
   | 'nextItemAdded'
-  | 'callSpecificNumber';
+  | 'callSpecificNumber'
+  | 'deleteIncomingItem'
+  | 'incomingItemDeleted'

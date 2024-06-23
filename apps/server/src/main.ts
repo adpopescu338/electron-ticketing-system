@@ -66,3 +66,8 @@ app.on('window-all-closed', async () => {
 
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
+
+// add listener, catch all unhandled errors
+
+process.on('uncaughtException', console.error);
+process.on('unhandledRejection', console.error);

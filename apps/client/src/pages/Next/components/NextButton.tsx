@@ -39,9 +39,6 @@ export const NextButton: React.FC<{
   const socket = useSocket(queueSettings.name);
   const [systemSettings, loading] = useSystemSettings();
 
-  const shouldButtonBeDisabled =
-    disabled || !desk || loading || queueData.nextItems.some((item) => item.desk === desk);
-
   const handleNext = () => {
     socket!.emit('sendNextReq' satisfies EventNames, desk);
     setDisabled(true);
@@ -102,6 +99,9 @@ export const NextButton: React.FC<{
       setDisabled(false);
     }, systemSettings.Q_ITEM_DISPLAY_TIME_SECONDS * 1000);
   };
+
+  const shouldButtonBeDisabled =
+    disabled || !desk || loading || queueData.nextItems.some((item) => item.desk === desk);
 
   return (
     <Container>

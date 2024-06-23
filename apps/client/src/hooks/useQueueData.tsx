@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
-import { EventNames, FeUseDataReturnType, QItem, Queue, QueueDisplaySettings } from '@repo/types';
+import { EventNames, FeUseDataReturnType, Queue, QueueDisplaySettings } from '@repo/types';
 import { useSocket } from './useSocket';
 import axios from 'axios';
 
@@ -21,6 +21,28 @@ const shouldPlayMessageOrNewItemAudio = (newData: Queue, previousData: Queue) =>
   }
 
   return null;
+};
+
+const addEmptyCurrentItems = (
+  q: Queue,
+  maxBoxesToDisplay: number,
+  displayingOnDashboard: boolean
+): Queue => {
+  if (displayingOnDashboard) return q;
+
+  q = structuredClone(q);
+
+  q.currentItems = q.currentItems.slice(0, maxBoxesToDisplay);
+  q.nextItems = [];
+  if (!(q.currentItems.length < maxBoxesToDisplay)) return q;
+
+  const diff = maxBoxesToDisplay - q.currentItems.length;
+  for (let i = 0; i < diff; i++) {
+    // @ts-expect-error - TODO: fix types
+    q.currentItems.push(null);
+  }
+
+  return q;
 };
 
 export const useQueueData = (
@@ -52,18 +74,14 @@ export const useQueueData = (
   ]);
 
   const socket = useSocket(queueName);
-  const [data, setData] = React.useState<Queue>(initialValues);
-
   const maxItemsToDisplay = queueSettings.maxBoxesToDisplay;
+  const [data, setData] = React.useState<Queue>(
+    addEmptyCurrentItems(initialValues, maxItemsToDisplay, displayingOnDashboard)
+  );
 
   const setDataFromServer = useCallback(
     (q: Queue) => {
-      setData({
-        ...q,
-        currentItems: q.currentItems.slice(0, maxItemsToDisplay),
-        // we only need to display next items on the dashboard
-        ...(!displayingOnDashboard && { nextItems: [] }),
-      });
+      setData(addEmptyCurrentItems(q, maxItemsToDisplay, displayingOnDashboard));
     },
     [displayingOnDashboard, maxItemsToDisplay]
   );
@@ -119,6 +137,11 @@ export const useQueueData = (
           nextItems,
         }));
       });
+
+      socket.on('incomingItemDeleted' satisfies EventNames, (q: Queue) => {
+        console.log('Received incoming item deleted', q);
+        setDataFromServer(q);
+      });
     }
 
     return () => {
@@ -126,6 +149,7 @@ export const useQueueData = (
       socket.off(newItemEvent);
       if (displayingOnDashboard) {
         socket.off(nextItemAddedEvent);
+        socket.off('incomingItemDeleted');
       }
     };
   }, [
@@ -136,19 +160,6 @@ export const useQueueData = (
     setDataFromServer,
     playAudioIfNeeded,
   ]);
-
-  if (data.currentItems.length < maxItemsToDisplay) {
-    const diff = maxItemsToDisplay - data.currentItems.length;
-    const itemsToDisplay: Array<QItem | null> = [...data.currentItems];
-    for (let i = 0; i < diff; i++) {
-      itemsToDisplay.push(null);
-    }
-
-    return {
-      ...data,
-      currentItems: itemsToDisplay,
-    };
-  }
 
   return data;
 };

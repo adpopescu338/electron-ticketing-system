@@ -4,21 +4,27 @@ import { EventNames } from '@repo/types';
 
 export const useSocket = (queueName?: string) => {
   const [socket, setSocket] = useState<Socket>();
+  const [ready, setReady] = useState(false)
 
   useEffect(() => {
     const newSocket = io();
-
-    if (queueName) {
-      newSocket.on('connect', () => {
-        newSocket.emit('joinQueue' satisfies EventNames, queueName);
-      });
-    }
-
     setSocket(newSocket);
+
     return () => {
       newSocket.close();
     };
   }, []);
+
+  useEffect(() => {
+    if (queueName && socket) {
+      socket.on('connect', () => {
+        socket.emit('joinQueue' satisfies EventNames, queueName);
+        setReady(true)
+      });
+    }
+  }, [queueName, socket]);
+
+  if (!ready) return;
 
   return socket;
 };
