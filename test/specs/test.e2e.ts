@@ -1,15 +1,9 @@
 import { browser } from '@wdio/globals'
 import { DEFAULT_SYSTEM_SETTINGS } from '@repo/constants'
+import { getCurrentItem, swalConfirm, verifyQueueItem } from './utils';
 
 const BASE_URL = `http://localhost:${DEFAULT_SYSTEM_SETTINGS.PORT}`;
 const QUEUE_1_NAME = 'test-queue';
-
-const swalConfirm = async () => {
-    // await browser.pause(5000)
-    const elem = $('.swal-button--confirm')
-    await elem.waitForExist()
-    await elem.click()
-}
 
 const openIncognitoWindow = async (path: string) => {
     const handler = await browser.newWindow(BASE_URL + path, {
@@ -74,21 +68,6 @@ describe('Creates Queue', () => {
         ).toBe(QUEUE_1_NAME)
     })
 })
-
-const getCurrentItem = async () => {
-    const tr = await $(`.queue-item`)
-    await tr.waitForExist()
-    const [itemNumber, itemDesk] = (await tr.getHTML(false)).split('</td>').map(x => x.split('>')[1])
-
-    return { itemNumber, itemDesk }
-}
-
-const verifyQueueItem = async (number: number, desk: string) => {
-    const { itemNumber, itemDesk } = await getCurrentItem()
-
-    expect(itemNumber).toBe(String(number))
-    expect(itemDesk).toBe(desk)
-}
 
 describe('Displays queue', () => {
     const verifyThatOnOperatePage = () => $('#next-page-container')
@@ -216,6 +195,8 @@ describe('Displays queue', () => {
         // await clickSendMessageButton()
     })
 });
+
+// TODO: Add tests for timing
 
 after(() => {
     // delete all data
