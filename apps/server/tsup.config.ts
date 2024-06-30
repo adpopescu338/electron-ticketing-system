@@ -5,6 +5,7 @@ export default defineConfig({
   splitting: false,
   sourcemap: false,
   clean: false,
+  minify: true,
   noExternal: [/^(?!electron$).+$/],
   external: [/^(?!electron$).*$/],
 });

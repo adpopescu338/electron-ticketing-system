@@ -20,8 +20,10 @@ import { Grid, Paper } from '@mui/material';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import styled from 'styled-components';
 import axios from 'axios';
-import swal from 'sweetalert';
+import swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
+import { useAudios } from 'hooks/useAudios';
+import { playAudio } from 'lib/playAudio';
 
 // Styled components
 const FormContainer = styled(Paper)({
@@ -85,14 +87,14 @@ const useSubmit = (queueName: string, onSubmit?: (values: QueueDisplaySettings) 
           throw new Error(res.data.error?.message || 'Unknown error.');
         }
         refetchQueuesSettings();
-        await swal('Success!', 'Queue settings saved.', 'success');
+        await swal.fire('Success!', 'Queue settings saved.', 'success');
 
         setTimeout(() => {
           navigate('/');
         }, 400);
       })
       .catch((err) => {
-        swal('Error!', err.message || 'Unknown error.', 'error');
+        swal.fire('Error!', err.message || 'Unknown error.', 'error');
       });
   };
 };
@@ -106,12 +108,10 @@ export const QueueSettings: React.FC<{
 
   const { queuesSettings } = useCtx();
   const queueByName = queuesSettings.find((queue) => queue.name === queueName);
-  const [audios, setAudios] = React.useState<string[]>([]);
-
-  const playAudio = (fileName: string) => {
-    const audio = new Audio(`/audio/${fileName}`);
-    audio.play();
-  };
+  const { audios } = useAudios((audios) => {
+    formik.setFieldValue('messageAudioFileName', audios[0]);
+    formik.setFieldValue('numberAudioFileName', audios[0]);
+  });
 
   const selectedQueueSettings = queueByName || DEFAULT_VALUES;
 
@@ -123,16 +123,6 @@ export const QueueSettings: React.FC<{
     onSubmit: handleSubmit,
     enableReinitialize: true,
   });
-
-  React.useEffect(() => {
-    axios.get('/api/audios').then((res) => {
-      setAudios(res.data);
-
-      formik.setFieldValue('messageAudioFileName', res.data[0]);
-      formik.setFieldValue('numberAudioFileName', res.data[0]);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <FormContainer elevation={3}>

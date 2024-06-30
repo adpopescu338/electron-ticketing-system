@@ -5,6 +5,7 @@ import ScheduleSendIcon from '@mui/icons-material/ScheduleSend';
 import { EventNames, FeUseDataReturnType } from '@repo/types';
 import React from 'react';
 import { useSocket } from 'hooks/useSocket';
+import swal from 'sweetalert2';
 
 const Container = styled.div`
   display: flex;
@@ -23,16 +24,16 @@ export const SendMessage: React.FC<{
 
   const handleSend = () => {
     if (!desk) {
-      sweetAlert('Please set a desk number', '', 'error');
+      swal.fire('Please set a desk number', '', 'error');
       return;
     }
     if (!socket) {
-      sweetAlert('Socket not connected', '', 'error');
+      swal.fire('Socket not connected', '', 'error');
       return;
     }
 
     if (!message) {
-      sweetAlert('Please enter a message', '', 'error');
+      swal.fire('Please enter a message', '', 'error');
       return;
     }
 

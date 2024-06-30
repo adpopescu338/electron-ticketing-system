@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import swal from 'sweetalert';
+import swal from 'sweetalert2';
 import LanIcon from '@mui/icons-material/Lan';
 import { Button } from '@mui/material';
 
@@ -18,7 +18,7 @@ export const AddressDisplayer: React.FC = () => {
   const port = window.location.port;
 
   const onClick = () => {
-    swal({
+    swal.fire({
       title: 'How to connect from other devices',
       text:
         "Make sure you're connected to the same network and try the links below:\n" +

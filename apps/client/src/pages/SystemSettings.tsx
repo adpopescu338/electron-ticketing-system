@@ -3,9 +3,10 @@ import { useFormik } from 'formik';
 import { TextField, Button, CircularProgress } from '@mui/material';
 import axios from 'axios';
 import { systemSettingsValidationSchema } from '@repo/validation';
-import swal from 'sweetalert';
+import swal from 'sweetalert2';
 import styled from 'styled-components';
 import { useSystemSettings } from 'hooks/useSystemSettings';
+import type { SystemSettings as ISystemSettings } from '@repo/types';
 
 const Form = styled.form`
   width: 50%;
@@ -24,17 +25,17 @@ const Form = styled.form`
 export const SystemSettings: React.FC = () => {
   const [initialValues, loading] = useSystemSettings();
 
-  const formik = useFormik({
+  const formik = useFormik<ISystemSettings>({
     initialValues: initialValues,
     validationSchema: systemSettingsValidationSchema,
     onSubmit: (values) => {
       axios
         .post('/api/system-settings', values)
         .then(() => {
-          swal('Success', 'Settings updated', 'success');
+          swal.fire('Success', 'Settings updated', 'success');
         })
         .catch((error) => {
-          swal('Error', 'Failed to update settings', 'error');
+          swal.fire('Error', 'Failed to update settings', 'error');
           console.error('Failed to update settings:', error);
         });
     },

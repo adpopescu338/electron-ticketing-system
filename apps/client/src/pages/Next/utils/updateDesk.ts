@@ -1,27 +1,21 @@
-import swal from 'sweetalert';
+import swal from 'sweetalert2';
 
 export const updateDesk = async (setDesk: (desk: string) => void): Promise<void> => {
-  let value: string = await swal({
+  let { value } = await swal.fire<string>({
     title: 'Enter your desk id',
-    content: {
-      element: 'input',
-    },
-    buttons: {
-      confirm: true,
-    },
-    closeOnClickOutside: false,
+    input: 'text',
+    showCancelButton: false,
+    allowOutsideClick: false,
   });
 
   value = value?.trim();
 
   if (!value) {
-    await swal({
+    await swal.fire({
       title: 'Invalid desk id',
       icon: 'error',
-      buttons: {
-        confirm: true,
-      },
-      closeOnClickOutside: false,
+      showCancelButton: false,
+      allowOutsideClick: false,
     });
 
     return updateDesk(setDesk);

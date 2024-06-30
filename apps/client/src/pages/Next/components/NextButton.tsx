@@ -3,7 +3,7 @@ import { EventNames, FeUseDataReturnType, QueueDisplaySettings, SystemSettings }
 import Button from '@mui/material/Button';
 import styled from 'styled-components';
 import { useSocket } from 'hooks/useSocket';
-import swal from 'sweetalert';
+import swal from 'sweetalert2';
 import { isSwalNumberValid } from 'lib/isSwalNumberValid';
 import { useSystemSettings } from 'hooks/useSystemSettings';
 
@@ -50,22 +50,21 @@ export const NextButton: React.FC<{
 
   const handleSpecificNumber = async () => {
     if (!queueSettings.displayNumber) return;
-    const number = await swal('Enter number to call', {
-      content: {
-        element: 'input' as const,
-
-        attributes: {
-          placeholder: 'Number',
-          type: 'number',
-        },
+    const { value: number } = await swal.fire({
+      title: 'Enter number to call',
+      input: 'number',
+      inputAttributes: {
+        min: systemSettings.START_NUMBER + '',
+        max: systemSettings.MAX_NUMBER + '',
       },
-      buttons: ['Cancel', 'Confirm'],
+      showCancelButton: true,
+      showConfirmButton: true,
     });
 
     if (number === null) return;
 
     if (!isSwalNumberValid(number, systemSettings.START_NUMBER, systemSettings.MAX_NUMBER)) {
-      await swal(
+      await swal.fire(
         'Invalid number',
         `Please enter a number between ${systemSettings.START_NUMBER} and ${systemSettings.MAX_NUMBER}`,
         'error'
@@ -76,15 +75,17 @@ export const NextButton: React.FC<{
     const intVal = Number(number);
 
     // yes, no
-    const countShouldFollowFromThisNumber = await swal(
-      `Should the count follow from ${number}?`,
-      `Should number after ${number} be ${getNextNumber(systemSettings, intVal)}?`,
-      {
-        buttons: ['No', 'Yes'],
-        closeOnClickOutside: false,
-        closeOnEsc: false,
-      }
-    );
+    const countShouldFollowFromThisNumber = await swal.fire({
+      title: 'Should the count follow from this number?',
+      icon: 'question',
+      text: `Should number after ${number} be ${getNextNumber(systemSettings, intVal)}?`,
+      showCancelButton: true,
+      showConfirmButton: true,
+      cancelButtonText: 'No',
+      confirmButtonText: 'Yes',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+    });
 
     socket!.emit(
       'callSpecificNumber' satisfies EventNames,

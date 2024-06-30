@@ -7,6 +7,7 @@ import {
   DisplayQueue,
   CustomDisplay,
   SystemSettings,
+  AudioSettings,
 } from './pages';
 import isValidProp from '@emotion/is-prop-valid';
 import { StyleSheetManager } from 'styled-components';
@@ -31,6 +32,7 @@ function App() {
               <Route path="/queue/:queueName" element={<QueueSettings />} />
               <Route path="/custom-display" element={<CustomDisplay />} />
               <Route path="/system-settings" element={<SystemSettings />} />
+              <Route path="/audio-settings" element={<AudioSettings />} />
             </Routes>
           </BrowserRouter>
         </StyleSheetManager>

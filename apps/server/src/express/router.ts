@@ -13,8 +13,11 @@ import { systemSettingsValidationSchema, queueSettingsValidationSchema } from '@
 import storage from 'electron-json-storage';
 import path from 'path';
 import fs from 'fs';
+import fileUpload from 'express-fileupload';
 
 export const router = Router();
+
+router.use(fileUpload());
 
 export const getClientDir = () => {
   if (process.env.NODE_ENV === 'development') {
@@ -29,7 +32,7 @@ router.get('/q', (req, res) => {
   res.json(queuesSettings);
 });
 
-router.get('/audios', (req, res) => {
+const audiosPath = (() => {
   const isDev = process.env.NODE_ENV === 'development';
   const paths = [getClientDir()]
   if (isDev) {
@@ -41,7 +44,13 @@ router.get('/audios', (req, res) => {
     audiosPaths = audiosPaths.replace("/dist", "")
   }
 
-  fs.readdir(audiosPaths, { encoding: "utf-8" }, (err, files) => {
+  return audiosPaths;
+})();
+
+router.get('/audios', (req, res) => {
+
+
+  fs.readdir(audiosPath, { encoding: "utf-8" }, (err, files) => {
     if (err) {
       console.error(err);
       res.status(500).json({ success: false, message: err.message });
@@ -151,6 +160,50 @@ router.delete('/all', (req, res) => {
     }
 
     QueueManagers.removeAllQueues();
+
+    res.json({ success: true });
+  });
+});
+
+router.post('/audio', async (req, res) => {
+  if (!req.files || !req.files.audio) {
+    res.status(400).json({ success: false, message: 'No file uploaded' });
+    return;
+  }
+
+  const audio = req.files.audio as fileUpload.UploadedFile;
+
+  if (!audio.mimetype.startsWith('audio/')) {
+    res.status(400).json({ success: false, message: 'Invalid file type' });
+    return;
+  }
+
+  const fileName = audio.name;
+
+
+  const filePath = path.join(audiosPath, fileName);
+
+  audio.mv(filePath, (err) => {
+    if (err) {
+      res.status(500).json({ success: false, message: err.message });
+      return;
+    }
+
+    res.json({ success: true });
+  });
+
+})
+
+router.delete('/audio/:audioName', (req, res) => {
+  const { audioName } = req.params;
+
+  const filePath = path.join(audiosPath, audioName);
+
+  fs.unlink(filePath, (err) => {
+    if (err) {
+      res.status(500).json({ success: false, message: err.message });
+      return;
+    }
 
     res.json({ success: true });
   });

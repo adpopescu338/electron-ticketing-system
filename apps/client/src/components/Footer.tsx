@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { Typography, IconButton } from '@mui/material';
-import swal from 'sweetalert';
+import swal from 'sweetalert2';
 import HelpIcon from '@mui/icons-material/Help';
 
 const Container = styled.div`
@@ -13,7 +13,7 @@ const text =
   "Tick is a queue management system built by Alexandru Popescu. It's free, open-source (available at https://github.com/adpopescu338/electron-ticketing-system) and it aims to be a versatile solution that can accommodate different queue setups";
 
 const onClick = () => {
-  swal('About', text);
+  swal.fire('About', text);
 };
 
 export const Footer = () => {

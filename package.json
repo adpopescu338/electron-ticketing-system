@@ -10,7 +10,7 @@
     "build:server": "turbo run build --filter={apps/server}",
     "dev:client": "cd apps/client && yarn dev",
     "dev:server": "turbo run dev --filter={apps/server}",
-    "dev": "concurrently \"yarn dev:client\" \"yarn dev:server\"",
+    "dev": "turbo run dev",
     "copy-server": "cp -r ./apps/server/dist/ ./dist",
     "copy-client": "cp -r ./apps/client/dist/ ./dist",
     "copy-electron": "cp -r ./node_modules/electron/ ./dist",
@@ -40,11 +40,9 @@
     "@wdio/mocha-framework": "^8.39.0",
     "@wdio/spec-reporter": "^8.39.0",
     "chromedriver": "^126.0.3",
-    "concurrently": "^8.2.2",
     "electron": "29.1.0",
     "electron-builder": "^24.13.3",
     "electron-icon-builder": "^2.0.1",
-    "ts-node": "^10.9.2",
     "turbo": "^1.12.4",
     "typescript": "^5.3.3",
     "wdio-electron-service": "^6.6.1"
@@ -63,6 +61,7 @@
     "directories": {
       "output": "./build"
     },
+    "asar": false,
     "win": {
       "target": [
         {
