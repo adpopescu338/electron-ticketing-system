@@ -1,6 +1,6 @@
-# Tick, a queue management system
+# Tick, a versatile Queue Management System
 
-This is a queue management system for a small business. It is built with Electron, express, React and Socket.io.
+This is a queue management system suitable for a range of scenarios. It is built with Electron, express, React and Socket.io.
 After starting the packaged application, it will start an express server.
 The interface can be accessed from the App or from a browser in the same network.
 
@@ -15,10 +15,4 @@ Then run `yarn dev` to start the development server.
 ## Packaging
 
 Run `yarn build` to build the application.
-Then run `yarn package` to package the application for the current platform.
-
-Package with :
-`yarn package --win --ia32`
-`yarn package --win --x64`
-`yarn package --mac`
-`yarn package --linux`
+Run `yarn package` to package the application.
