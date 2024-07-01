@@ -1,6 +1,6 @@
 import { browser } from '@wdio/globals'
 import { DEFAULT_SYSTEM_SETTINGS } from '@repo/constants'
-import { getCurrentItem, swalConfirm, verifyQueueItem } from './utils';
+import { getCurrentItem, swalConfirm, verifyQueueItem, writeIntoSwalInput } from './utils';
 
 const BASE_URL = `http://localhost:${DEFAULT_SYSTEM_SETTINGS.PORT}`;
 const QUEUE_1_NAME = 'test-queue';
@@ -72,15 +72,8 @@ describe('Creates Queue', () => {
 describe('Displays queue', () => {
     const verifyThatOnOperatePage = () => $('#next-page-container')
     const clickNextButton = () => $("#next-button").click()
-    // const writeMessageText = (text: string) => $('#message-input').setValue(text)
-    // const clickSendMessageButton = () => $('#send-message-button').click()
-    const writeIntoSwalInput = async (text: string) => {
-        const input = await $('input.swal-content__input')
-        // await browser.pause(3000)
-        await input.waitForExist()
-        await input.setValue(text)
-    }
-
+    const writeMessageText = (text: string) => $('#message-input').setValue(text)
+    const clickSendMessageButton = () => $('#send-message-button').click()
 
     let displayerHandler: string;
     it('should open queue display in a new window', async () => {
@@ -122,7 +115,7 @@ describe('Displays queue', () => {
         await browser.switchToWindow(handles[0]);
     });
 
-    it('opens the operate queue page', async () => {
+    it('opens and operate the queue page', async () => {
         await Promise.all([
             // Verify that the URL changes to /next/${QUEUE_1_NAME}
             browser.waitUntil(
@@ -135,18 +128,22 @@ describe('Displays queue', () => {
             $(`#queue-open-operation-page-button`).click(),
         ])
 
-        // emit the keydown event "1" to input the number 1
-        await browser.keys(['1']);
+        await writeIntoSwalInput('1')
 
         await swalConfirm()
 
         await verifyThatOnOperatePage();
 
 
+        const backIcon = $('[data-testid="ArrowBackIcon"]')
+
+        await backIcon.isClickable()
+        await browser.pause(500)
+
         // navigate back to the home page by clicking the back button
         await Promise.all([
-            browser.waitUntil(async () => (await browser.getUrl()) === `${BASE_URL}/`),
-            ($('[data-testid="ArrowBackIcon"]')).click(),
+            browser.waitUntil(() => browser.getUrl().then(v => v === `${BASE_URL}/`)),
+            backIcon.click(),
         ])
     });
 
@@ -191,8 +188,19 @@ describe('Displays queue', () => {
             timeoutMsg: 'expected item 2 to be displayed'
         })
 
-        // await writeMessageText('Hello')
-        // await clickSendMessageButton()
+        await browser.switchToWindow(window1Handle);
+
+        await writeMessageText('Hello')
+        await clickSendMessageButton()
+
+        // switch to displayer
+        await browser.switchToWindow(displayerHandler);
+        await browser.pause(15_000)
+        await browser.waitUntil(async () => {
+            const elem = await $('.queue-display-message-container')
+            await elem.waitForDisplayed()
+            return await elem.getText() === 'Hello'
+        })
     })
 });
 

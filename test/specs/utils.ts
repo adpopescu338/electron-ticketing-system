@@ -4,8 +4,7 @@ export const BASE_URL = `http://localhost:${DEFAULT_SYSTEM_SETTINGS.PORT}`;
 export const QUEUE_1_NAME = 'test-queue';
 
 export const swalConfirm = async () => {
-    // await browser.pause(5000)
-    const elem = $('.swal-button--confirm')
+    const elem = $('button.swal2-confirm')
     await elem.waitForExist()
     await elem.click()
 }
@@ -23,4 +22,10 @@ export const verifyQueueItem = async (number: number, desk: string) => {
 
     expect(itemNumber).toBe(String(number))
     expect(itemDesk).toBe(desk)
+}
+
+export const writeIntoSwalInput = async (text: string) => {
+    const input = await $('#swal2-input')
+    await input.waitForExist()
+    await input.setValue(text)
 }

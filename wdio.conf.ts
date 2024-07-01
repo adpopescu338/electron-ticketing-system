@@ -1,8 +1,8 @@
 /// <reference types="wdio-electron-service" />
 import type { Options } from '@wdio/types'
-// import * as chromedriver from 'chromedriver';
+import * as chromedriver from 'chromedriver';
 
-//const chromeDriverPath = chromedriver.path;
+const chromeDriverPath = chromedriver.path;
 
 
 export const config: Options.Testrunner = {
@@ -73,7 +73,7 @@ export const config: Options.Testrunner = {
             appArgs: []
         },
         'wdio:chromedriverOptions': {
-            //    binary: chromeDriverPath TODO: FIX THIS
+               binary: chromeDriverPath
         }
     }],
 

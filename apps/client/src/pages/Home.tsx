@@ -147,6 +147,7 @@ export const Home: React.FC = () => {
           tooltipText="Create a new queue. You will be able to customize the default settings"
           href="/queue/_new"
           icon={<AddCircleIcon />}
+          id="create-new-queue-button"
         />
 
         {hasQ && (

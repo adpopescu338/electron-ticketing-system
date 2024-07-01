@@ -8,6 +8,14 @@ import { useQueueData } from 'hooks/useQueueData';
 import { useSocket } from 'hooks/useSocket';
 import { useCtx } from 'hooks/useCtx';
 
+const loadingContainerStyle = {
+  width: '100%',
+  height: '80vh',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+};
+
 export const Next: React.FC = () => {
   const { queuesSettings, loadingQueuesSettings } = useCtx();
   const { queueName } = useParams();
@@ -15,15 +23,7 @@ export const Next: React.FC = () => {
 
   if (!queueSettings || loadingQueuesSettings) {
     return (
-      <div
-        style={{
-          width: '100%',
-          height: '80vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
+      <div style={loadingContainerStyle}>
         {loadingQueuesSettings ? (
           <CircularProgress />
         ) : (
@@ -38,20 +38,27 @@ export const Next: React.FC = () => {
   return <DashboardWorker queueSettings={queueSettings} />;
 };
 
+const spinnerStyle = {
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  height: '90vh',
+};
+
 const Loading = () => {
   return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '90vh',
-      }}
-    >
+    <div style={spinnerStyle}>
       <CircularProgress />
     </div>
   );
 };
+
+const dashboardWorkerContainerStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '20px',
+  paddingBottom: '50px',
+} as const;
 
 const DashboardWorker: React.FC<{ queueSettings: QueueDisplaySettings }> = ({ queueSettings }) => {
   const socket = useSocket(queueSettings.name);
@@ -65,21 +72,16 @@ const DashboardWorker: React.FC<{ queueSettings: QueueDisplaySettings }> = ({ qu
       setDesk(localStorageDesk);
       return;
     }
+
     updateDesk(setDesk);
   }, []);
 
-  if (!socket || !queueData || !desk) return <Loading />;
+  if (!socket || !queueData || !desk) {
+    return <Loading />;
+  }
 
   return (
-    <div
-      id="next-page-container"
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '20px',
-        paddingBottom: '50px',
-      }}
-    >
+    <div id="next-page-container" style={dashboardWorkerContainerStyle}>
       <Desk desk={desk} setDesk={setDesk} />
       <NextButton desk={desk} queueSettings={queueSettings} queueData={queueData} />
       <QDisplayer settings={queueSettings} queueData={queueData} currentDesk={desk} />
